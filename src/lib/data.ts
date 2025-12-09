@@ -41,15 +41,16 @@ export const PROJECTS_DATA: Project[] = [
     image: "/nyay.png", 
     githubUrl: "https://github.com/sumitahmed/NyaySarthi-Updated-ui-ux",
   },
-  // ✅ NEW: Portfolio Project with Updated Description
+  // ✅ UPDATED: Portfolio Project with Correct Links
   {
     id: 4,
     title: "Hyperland Portfolio",
     description: "A highly interactive developer portfolio inspired by Hyperland Linux rices. Features a custom draggable window interface, complex Framer Motion animations, real-time activity status synced with Discord, and live GitHub & Codolio stat tracking.",
     tags: ["React", "TypeScript", "Tailwind CSS", "Framer Motion", "Discord API"],
     image: "/portfolio-showcase.png", 
-    githubUrl: "https://github.com/sumitahmed/portfolio", 
-    demoUrl: "/", // Links to the current site
+    // 👇 Updated to your actual repo and live site
+    githubUrl: "https://github.com/sumitahmed/sumitahmed.github.io", 
+    demoUrl: "https://sumitahmed.github.io", 
     featured: true,
   }
 ];
