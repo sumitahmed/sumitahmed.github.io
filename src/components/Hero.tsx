@@ -139,7 +139,7 @@ export function Hero() {
                 className="[&>div]:!shadow-[0_0_80px_-15px_rgba(6,182,212,0.15),0_0_80px_-15px_rgba(244,63,94,0.15)] w-full"
               >
                 <div className="flex flex-col items-center gap-6 text-center p-6">
-                  <div className="relative w-32 h-32 rounded-full overflow-hidden border border-white/10 shadow-[0_0_20px_rgba(6,182,212,0.3)] group z-10">
+                  <div className="relative w-32 h-32 rounded-full overflow-hidden border border-white/10 shadow-[0_0_20px_rgba(244,114,182,0.45)] group z-10">
                     <img
                       src="/profile.jpg" 
                       alt="Sumit Ahmed"

@@ -6,12 +6,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'hl-bg': '#0b0f14',
-        'hl-panel': '#0f1419',
-        'hl-cyan': '#7fd6ff',
-        'hl-rose': '#ffb78b',
-        'hl-moss': '#77c9a7',
-        'hl-muted': '#98a2aa',
+        // DARK ZEN PALETTE
+        'hl-bg': '#050505',       // Deepest Ink Black
+        'hl-panel': '#0a0a0a',    // Smoked Glass
+        'hl-card': '#121212',     // Slightly lighter for hover
+        
+        // REPLACING CYAN WITH SAKURA PINK
+        'hl-cyan': '#ffb7c5',     // Pale Cherry Blossom Pink (The new main accent)
+        
+        // Secondary Accents
+        'hl-rose': '#e04f5f',     // Torii Gate Red
+        'hl-moss': '#8b9bb4',     // Desaturated Blue-Grey (Replacing Green)
+        'hl-muted': '#9ca3af',    // Clean Grey text
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

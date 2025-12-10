@@ -25,7 +25,6 @@ export function DraggableWindow({
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
   
-  // ✅ NEW: Track screen size to disable dragging on mobile
   const [isMobile, setIsMobile] = useState(false);
 
   const windowRef = useRef<HTMLDivElement>(null);
@@ -35,7 +34,6 @@ export function DraggableWindow({
   const MIN_WIDTH = 300;
   const MIN_HEIGHT = 200;
 
-  // ✅ Check for mobile on mount and resize
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -64,7 +62,6 @@ export function DraggableWindow({
   };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-    // ✅ Disable drag on mobile or if maximized
     if (isMaximized || isMobile) return;
 
     setIsDragging(true);
@@ -182,7 +179,7 @@ export function DraggableWindow({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-md z-[9998] cursor-pointer"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998] cursor-pointer"
             onClick={handleMaximize}
           />
         )}
@@ -204,9 +201,9 @@ export function DraggableWindow({
             y: hasBeenDragged && !isMaximized && !isMobile ? offset.y : 0,
           }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          className="flex flex-col bg-hl-panel/95 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl w-full"
+          // 👇 UPDATED: High transparency (20%) + High Blur (xl)
+          className="flex flex-col bg-hl-panel/20 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl w-full"
           style={{
-            // ✅ RESPONSIVE SIZING: 100% on mobile, fixed size on desktop unless maximized
             width: isMaximized
               ? "min(700px, 90vw)"
               : size.width > 0 && !isMobile
@@ -236,7 +233,8 @@ export function DraggableWindow({
 
           {/* Window Header */}
           <div
-            className="flex items-center justify-between px-3 py-2 bg-hl-panel/95 backdrop-blur-sm border-b border-white/10 select-none rounded-t-lg relative flex-shrink-0"
+            // 👇 UPDATED: Header is slightly more visible (30%) but still glassy
+            className="flex items-center justify-between px-3 py-2 bg-hl-panel/30 backdrop-blur-md border-b border-white/10 select-none rounded-t-lg relative flex-shrink-0"
             onMouseDown={handleMouseDown}
             style={{
               cursor: isMaximized || isMobile ? "default" : "grab",
@@ -244,12 +242,12 @@ export function DraggableWindow({
             }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500"></div>
-              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-yellow-500"></div>
-              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-green-500"></div>
+              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500/80 shadow-[0_0_8px_rgba(239,68,68,0.4)]"></div>
+              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-yellow-500/80 shadow-[0_0_8px_rgba(234,179,8,0.4)]"></div>
+              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-green-500/80 shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
             </div>
 
-            <div className="absolute left-1/2 -translate-x-1/2 text-[10px] md:text-xs font-mono text-hl-muted pointer-events-none truncate max-w-[150px]">
+            <div className="absolute left-1/2 -translate-x-1/2 text-[10px] md:text-xs font-mono text-hl-muted pointer-events-none truncate max-w-[150px] opacity-80">
               {title}
             </div>
 
@@ -274,7 +272,8 @@ export function DraggableWindow({
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className={`bg-hl-panel/80 backdrop-blur-md border-x border-b border-white/10 rounded-b-lg ${isMaximized ? "flex-1 overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+                // 👇 UPDATED: Transparent content background to let the shell's blur do the work
+                className={`bg-transparent rounded-b-lg ${isMaximized ? "flex-1 overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
                 style={size.height > 0 && !isMaximized && !isMobile ? { maxHeight: `${size.height - 40}px` } : {}}
               >
                 {children}
@@ -301,7 +300,7 @@ export function DraggableWindow({
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[10001] w-[90%] max-w-md"
             >
-              <div className="bg-hl-panel border border-hl-cyan/30 rounded-lg shadow-2xl p-6">
+              <div className="bg-hl-panel/90 backdrop-blur-xl border border-hl-cyan/30 rounded-lg shadow-2xl p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-hl-cyan/10 flex items-center justify-center">
                     <X className="w-6 h-6 text-hl-cyan" />

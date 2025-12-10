@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { DraggableWindow } from './DraggableWindow';
+import { ReactNode } from "react";
+import { DraggableWindow } from "./DraggableWindow";
 
 interface TerminalWidgetProps {
   title: string;
@@ -8,18 +8,20 @@ interface TerminalWidgetProps {
   noPadding?: boolean;
 }
 
-export function TerminalWidget({ 
-  title, 
-  children, 
-  className = '',
-  noPadding = false
+export function TerminalWidget({
+  title,
+  children,
+  className = "",
+  noPadding = false,
 }: TerminalWidgetProps) {
+  // ✅ FIX: Now wrapping DraggableWindow to get the real buttons (x, expand, minimize)
   return (
     <DraggableWindow 
       title={title} 
       className={className}
     >
-      <div className={`bg-hl-panel/80 backdrop-blur-md border-x border-b border-white/10 rounded-b-lg ${noPadding ? '' : 'p-6'}`}>
+      {/* Content wrapper to handle padding logic */}
+      <div className={`h-full ${noPadding ? "" : "p-4 md:p-5"}`}>
         {children}
       </div>
     </DraggableWindow>
