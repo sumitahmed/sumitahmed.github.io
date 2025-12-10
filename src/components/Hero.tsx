@@ -79,13 +79,14 @@ export function Hero() {
             </motion.h1>
           </div>
 
+          {/* 👇 UPDATED BIO */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
             className="text-lg text-hl-muted max-w-lg leading-relaxed mx-auto lg:mx-0"
           >
-            Full Stack Developer & Engineering Student transforming ideas into robust web solutions. Specializing in scalable MERN architectures, cloud-native deployments, and AI integrations.
+            Full Stack Developer & Student. I build web apps that actually ship, fix the bugs I create, and obsess over clean backend architecture & aesthetically pleasing UI. Currently exploring agentic AI workflows and scalable cloud architectures.
           </motion.p>
 
           <motion.div
@@ -117,7 +118,7 @@ export function Hero() {
             transition={{ delay: 0.8 }}
             className="flex items-center gap-6 pt-4 text-hl-muted justify-center lg:justify-start"
           >
-            <a href="https://github.com/sumitahmed" target="_blzank" rel="noopener noreferrer" className="hover:text-white hover:scale-110 transition-all">
+            <a href="https://github.com/sumitahmed" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:scale-110 transition-all">
               <Github className="w-6 h-6" />
             </a>
             <a href="https://www.linkedin.com/in/sk-sumit-ahmed-67a30227b/" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:scale-110 transition-all">
@@ -129,7 +130,7 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Right: Profile Window (Visible on Mobile now) */}
+        {/* Right: Profile Window */}
         <div className="flex items-center justify-center h-full relative z-10 w-full mt-8 lg:mt-0">
           <div className="w-full max-w-lg relative">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[105%] h-[105%] bg-gradient-to-br from-hl-cyan/30 via-transparent to-hl-rose/30 blur-[50px] -z-10 rounded-xl opacity-50 pointer-events-none"></div>
@@ -153,19 +154,21 @@ export function Hero() {
                     <span>ROLE</span><span className="text-hl-cyan font-bold">Full Stack Dev</span>
                   </div>
                   <div className="flex justify-between text-xs font-mono text-hl-muted border-b border-white/5 pb-2">
-                    <span>LEVEL</span><span className="text-hl-rose font-bold">Industry Ready</span>
+                    <span>LEVEL</span><span className="text-hl-rose font-bold">Shipping Code</span>
                   </div>
                   <div className="flex justify-between text-xs font-mono text-hl-muted border-b border-white/5 pb-2">
                     <span>LOCATION</span><span className="text-hl-moss font-bold">Remote / On-site / Freelance</span>
                   </div>
                   <div className="flex justify-between text-xs font-mono text-hl-muted pt-1">
-                    <span>STATUS</span><span className="text-green-400 font-bold animate-pulse">Ready to Deploy</span>
+                    <span>STATUS</span><span className="text-green-400 font-bold animate-pulse">Building / Debugging</span>
                   </div>
                 </div>
 
                 <div className="w-full bg-black/40 rounded p-3 text-left font-mono text-xs space-y-1 border border-white/5">
                   <p className="text-green-400 font-bold">$ cat summary.txt</p>
-                  <p className="text-hl-muted">Full-Stack Developer & DevOps enthusiast...</p>
+                  <p className="text-hl-muted">
+                    I make software come alive. Specializing in transforming raw ideas into live, interactive products.
+                  </p>
                   <p className="text-green-400 animate-pulse">_</p>
                 </div>
               </div>
