@@ -15,7 +15,11 @@ export function ProjectCard({ project }: { project: Project }) {
         noPadding 
         className="hover:border-hl-cyan/50 transition-colors h-full flex flex-col"
       >
-        <div className="aspect-video overflow-hidden border-b border-white/5 relative group bg-black/40">
+        {/* ✅ FIX ADDED HERE: Added onClick and cursor-pointer to the image container */}
+        <div 
+          onClick={() => setIsModalOpen(true)}
+          className="aspect-video overflow-hidden border-b border-white/5 relative group bg-black/40 cursor-pointer"
+        >
           <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
           
           <img 
@@ -95,7 +99,6 @@ export function ProjectCard({ project }: { project: Project }) {
               </Button>
             )}
 
-            {/* ✅ FIXED: Button now says "Demo Video" explicitly */}
             {project.youtubeUrl && (
               <Button 
                 size="sm"

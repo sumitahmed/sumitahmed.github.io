@@ -38,48 +38,49 @@ export const PROJECTS_DATA: Project[] = [
     featured: true,
     
     // ✅ UPDATED: Focused on Satellite/Geospatial Data
-    overview: "AgriSense is a geospatial intelligence platform that democratizes precision agriculture by leveraging satellite remote sensing data. Instead of relying on expensive, maintenance-heavy physical sensors, AgriSense processes multi-spectral satellite imagery (like Sentinel-2 or Landsat) to analyze crop health from space. It computes critical vegetation indices (NDVI, NDWI) to detect water stress, chlorophyll content, and pest infestations across large acres of land without the farmer needing to step into the field. The platform overlays this data onto an interactive map, giving farmers a 'God's eye view' of their harvest.",
-    
-    motivation: "I realized that physical IoT sensors are not scalable for the average Indian farmer—they are expensive to install, require internet connectivity in remote fields, and break easily. Satellite data, however, is scalable and covers every inch of the planet. I built AgriSense to bridge the gap between complex satellite raw data and the farmer. By automating the processing of Geospatial data, I wanted to provide a cost-effective solution that identifies 'invisible' crop stress days before the human eye can see it.",
-    
-    features: [
-      "Geospatial Mapping: Interactive map interface allowing farmers to draw field boundaries (polygons) and fetch historical satellite data for that specific region.",
-      "NDVI Analysis (Vegetation Index): Uses Near-Infrared (NIR) and Red bands from satellite imagery to visualize crop density and health.",
-      "NDWI Monitoring (Water Index): Detects water stress levels in the soil by analyzing Green and NIR spectral bands.",
-      "Heatmap Visualization: Color-coded overlays on the map to pinpoint specific areas of the field that are underperforming or dry.",
-      "Yield Prediction Model: Machine Learning algorithms that correlate historical satellite indices with crop yield data to forecast harvest output."
-    ],
-    
-    techStackDetails: [
-      { category: "Frontend", tools: "React.js, Leaflet/Mapbox GL for geospatial rendering" },
-      { category: "Backend API", tools: "FastAPI (Python) for processing large raster datasets" },
-      { category: "Geospatial Libs", tools: "Rasterio, Shapely, PyProj, GDAL" },
-      { category: "Satellite Sources", tools: "Sentinel-2 API / Landsat Data / Google Earth Engine" },
-      { category: "ML Engine", tools: "Scikit-learn (Random Forest for regression analysis)" }
-    ],
-    
-    challenges: [
-      { 
-        title: "Cloud Cover Interference", 
-        description: "Satellite optical sensors cannot see through clouds. I had to implement a 'Cloud Masking' algorithm to filter out cloudy days and interpolate data points to ensure continuous monitoring." 
-      },
-      { 
-        title: "Coordinate System Projection", 
-        description: "Mapping latitude/longitude (WGS84) to satellite raster grid coordinates (UTM) was mathematically challenging. I used PyProj to handle accurate coordinate transformations for precise field mapping." 
-      }
-    ],
+ 
+  overview: "AgriSense is a geospatial intelligence platform that democratizes precision agriculture. While the core engine analyzes multi-spectral satellite imagery (Sentinel-2/Landsat) to compute vegetation indices (NDVI, NDWI), my role was to architect the full-stack infrastructure that delivers this complex data to farmers. The platform visualizes crop health and water stress on an interactive map, translating heavy backend calculations into a seamless, responsive user experience.",
 
-    impact: [
-      "Selected as a key project for Smart India Hackathon 2025 internal round.",
-      "Eliminated the hardware cost of physical sensors by moving to a 100% software-based satellite solution.",
-      "Demonstrated 90% accuracy in identifying water-stressed zones compared to ground-truth data."
-    ],
+  motivation: "My team built powerful ML models to analyze satellite data, but raw data is useless to a farmer without a clear interface. As the Lead Full Stack Developer, my goal was to bridge the gap between the Data Science team and the end-user. I wanted to build a robust system that could ingest the heavy data payloads from our ML pipeline and render them instantly on a frontend that feels intuitive, ensuring that 'invisible' crop stress is visualized clearly days before the human eye can see it.",
 
-    futurePlans: [
-      "Hyperspectral Imaging: Integrating higher resolution data to detect specific crop diseases (not just general stress).",
-      "Automated Advisory: Using LLMs to generate text advice based on the NDVI heatmap (e.g., 'Sector 4 needs irrigation').",
-      "Mobile App: React Native version for on-field usage with GPS tracking."
-    ]
+  features: [
+    "Geospatial Mapping: Interactive map interface allowing farmers to draw field boundaries (polygons) which I process to fetch specific regional data.",
+    "Data Visualization: rendering complex NDVI/NDWI layers from the backend onto the map with custom color-coded overlays.",
+    "Real-time Dashboard: A responsive UI that displays crop density, water stress levels, and pest alerts fetched from our analysis engine.",
+    "Field Management: specialized forms and state management to help farmers categorize and track different acres of land.",
+    "Yield Forecast UI: Visual charts and graphs displaying the yield predictions generated by the ML algorithms."
+  ],
+
+  techStackDetails: [
+    { category: "Frontend Architecture", tools: "React.js, Tailwind CSS, Leaflet/Mapbox GL" },
+    { category: "Backend API", tools: "FastAPI (Python), Uvicorn" },
+    { category: "Data Integration", tools: "REST APIs, JSON Serialization" },
+    { category: "Powered By", tools: "Team's ML Engine (Scikit-learn, Rasterio, Sentinel-2)" }
+  ],
+
+  impact: [
+    "Selected as a key project for Smart India Hackathon 2025 internal round.",
+    "Architected a scalable Full Stack system that successfully integrated the team's Python-based ML models with a React frontend.",
+    "Optimized data rendering to handle complex geospatial overlays without lagging the user interface."
+  ],
+
+  challenges: [
+    {
+      title: "Backend-ML Integration",
+      description: "The ML team's models produced massive raster datasets. My challenge was designing a FastAPI backend that could receive this heavy data, process it efficiently, and send lightweight JSON responses to the frontend to ensure the app remained fast."
+    },
+    {
+      title: "Complex UI State Management",
+      description: "Translating the UI/UX designs into code was difficult because the map state had to sync with the data sidebar. I implemented complex state management to ensure that when a user drew a polygon on the map, the dashboard immediately updated with the correct context for that specific region."
+    }
+  ],
+
+  futurePlans: [
+    "Mobile App: Porting the React frontend to React Native for on-field usage.",
+    "Real-time Notifications: Implementing WebSockets to push alerts to the farmer immediately when the backend detects stress.",
+    "Offline Mode: Caching map data so farmers can view their field analysis even with poor connectivity."
+  ]
+
   },
   {
     id: 2,
