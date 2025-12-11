@@ -2,6 +2,7 @@ import { Terminal, Clock, Home, User, Code, Mail, Folder, Music, Wifi, Zap, Acti
 import { useState, useEffect } from "react";
 import { InteractiveSakura } from "./InteractiveSakura";
 import { LiveActivity } from "./LiveActivity";
+import { EngagementPopup } from "./EngagementPopup"; // 👈 IMPORT ADDED HERE
 
 // Define Interface for Lanyard (Discord Status)
 interface LanyardData {
@@ -51,7 +52,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       const start = performance.now();
       try {
-        // 🔥 FIX: Add timestamp (?t=...) to FORCE a real request and bypass cache
+        // Force real request with timestamp
         await fetch(window.location.href.split('?')[0] + '?t=' + new Date().getTime(), { 
           method: 'HEAD', 
           cache: 'no-store',
@@ -61,7 +62,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         const end = performance.now();
         setPing(Math.round(end - start));
       } catch (e) {
-        // If fetch fails, we are definitely offline
         setPing(null);
       }
     };
@@ -181,6 +181,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <div className="zen-overlay" />
       <InteractiveSakura />
 
+      {/* Header / Status Bar */}
       <header className="fixed top-0 left-0 right-0 h-10 bg-[#050505]/80 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-4 z-50 text-xs font-mono select-none">
         
         {/* Left: Email */}
@@ -208,7 +209,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {/* Right: Modules */}
         <div className="flex items-center gap-3">
           
-          {/* Module: Last Played (with Hover Tooltip) */}
+          {/* Module: Last Played */}
           {!isListeningNow && lastPlayed && (
             <div 
               className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 hover:border-hl-cyan/30 transition-colors group cursor-default"
@@ -221,7 +222,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </div>
           )}
 
-          {/* Module: Ping (Strict Network Check) */}
+          {/* Module: Ping */}
           <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 text-hl-muted hover:text-white transition-colors cursor-default" title="Your Network Latency">
             <Activity className={`w-3 h-3 ${ping && ping < 100 ? 'text-green-400' : 'text-yellow-400'}`} />
             <span className="tabular-nums">{ping !== null ? `${ping}ms` : '--'}</span>
@@ -273,6 +274,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </a>
         ))}
       </nav>
+
+      {/* 👇 ADDED ENGAGEMENT POPUP HERE */}
+      <EngagementPopup />
+
     </div>
   );
 }
