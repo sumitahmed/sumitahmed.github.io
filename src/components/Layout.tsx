@@ -1,8 +1,9 @@
-import { Terminal, Clock, Home, User, Code, Mail, Folder, Music, Wifi, Zap, Activity, CloudOff, Moon } from "lucide-react";
+import { Terminal, Clock, Home, User, Code, Mail, Folder, Music, Wifi, Zap, Activity, CloudOff, Moon, Briefcase } from "lucide-react";
 import { useState, useEffect } from "react";
 import { InteractiveSakura } from "./InteractiveSakura";
 import { LiveActivity } from "./LiveActivity";
-import { EngagementPopup } from "./EngagementPopup"; // 👈 IMPORT ADDED HERE
+import { EngagementPopup } from "./EngagementPopup";
+
 
 // Define Interface for Lanyard (Discord Status)
 interface LanyardData {
@@ -118,7 +119,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   // Scroll Spy
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["#", "#about", "#skills", "#projects", "#contact"];
+      // ✅ UPDATED: Added "#experience" to this list so the scroll spy sees it
+      const sections = ["#", "#about", "#skills", "#experience", "#projects", "#contact"];
       const scrollPosition = window.scrollY + 200;
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
@@ -152,10 +154,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
     updateBattery();
   }, []);
 
+  // ✅ UPDATED: Added the Briefcase Icon here
   const navItems = [
     { icon: Home, label: "~", path: "#" },
     { icon: User, label: "~/about", path: "#about" },
     { icon: Code, label: "~/skills", path: "#skills" },
+    { icon: Briefcase, label: "~/experience", path: "#experience" }, // 👈 NEW ITEM
     { icon: Folder, label: "~/projects", path: "#projects" },
     { icon: Mail, label: "~/contact", path: "#contact" },
   ];
@@ -275,7 +279,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         ))}
       </nav>
 
-      {/* 👇 ADDED ENGAGEMENT POPUP HERE */}
+      {/* Engagement Popup */}
       <EngagementPopup />
 
     </div>

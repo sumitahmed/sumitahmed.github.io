@@ -2,6 +2,7 @@ import { Layout } from "../components/Layout";
 import { Hero } from "../components/Hero";
 import { AboutSection } from "../components/AboutSection";
 import { SkillsSection } from "../components/SkillsSection";
+import { Experience } from "../components/Experience"; // 👈 IMPORT ADDED
 import { ProjectCard } from "../components/ProjectCard";
 import { ContactForm } from "../components/ContactForm";
 import { AchievementsSection } from "../components/AchievementsSection";
@@ -31,12 +32,14 @@ export default function Home() {
       <div id="about"><AboutSection /></div>
       <SkillsSection />
 
+      {/* 👇 ADDED EXPERIENCE SECTION HERE */}
+      <Experience />
+
       <section id="projects" className="py-20">
         <div className="mb-10 flex items-end gap-4">
           <h2 className="text-3xl md:text-4xl font-bold text-white"><span className="text-hl-rose">./</span>Projects</h2>
           <div className="h-px bg-white/10 flex-1 mb-4" />
         </div>
-        {/* ✅ FIXED: Stack on mobile (grid-cols-1), side-by-side on desktop (md:grid-cols-2) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {PROJECTS_DATA.map((project, i) => (
             <motion.div key={project.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.2, duration: 0.5 }}>
@@ -60,7 +63,6 @@ export default function Home() {
 
       <footer className="border-t border-white/5 py-12 pb-32 xl:pb-12 relative z-30">
         <div className="container mx-auto px-4 flex flex-col items-center gap-8">
-            {/* ✅ FIXED: Responsive Grid for Footer (2 cols mobile, 4 cols tablet, 8 cols desktop) */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 w-full max-w-4xl">
               <SocialLink href="https://github.com/sumitahmed" icon={<Github className="w-5 h-5" />} label="GitHub" />
               <SocialLink href="https://www.linkedin.com/in/sk-sumit-ahmed-67a30227b/" icon={<Linkedin className="w-5 h-5" />} label="LinkedIn" />

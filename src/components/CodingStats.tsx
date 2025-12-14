@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { GitBranch, Code2, Target, Award, ExternalLink, Terminal } from "lucide-react";
+import { GitBranch, Code2, Target, ExternalLink, Terminal, Activity } from "lucide-react";
 
 // --- Types ---
 interface ContributionDay {
@@ -26,12 +26,12 @@ export function CodingStats() {
   const codolioUsername = "SumitKun";
   const leetcodeUsername = "sumitahmed";
 
-  // Codolio Data
+  // Codolio Data (UPDATED from Screenshot)
   const codolioData = {
-    total: 135,
-    awards: 1,
-    easy: 58,
-    medium: 8,
+    total: 144,
+    activeDays: 33, // Replaces "Rank"
+    easy: 66,
+    medium: 9,
     hard: 1,
     label: "Codolio",
     color: "text-hl-rose",
@@ -39,10 +39,10 @@ export function CodingStats() {
     link: `https://codolio.com/profile/${codolioUsername}`,
   };
 
-  // LeetCode Data
+  // LeetCode Data (Placeholder structure to match)
   const leetcodeData = {
     total: 15,
-    awards: 0,
+    activeDays: 0,
     easy: 10,
     medium: 5,
     hard: 0,
@@ -167,10 +167,9 @@ export function CodingStats() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          // ✅ REDUCED PADDING (p-6) & SPACING (space-y-4)
           className="w-full space-y-4 rounded-xl border border-white/10 bg-hl-panel/40 p-6 transition-all hover:border-green-500/50 hover:bg-hl-panel/60 hover:shadow-xl hover:shadow-green-500/10"
         >
-          {/* Header - REDUCED BOTTOM PADDING (pb-3) */}
+          {/* Header */}
           <div className="flex items-center justify-between border-b border-white/5 pb-3">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-green-500/10 text-green-500">
@@ -256,10 +255,9 @@ export function CodingStats() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          // ✅ REDUCED PADDING (p-6)
           className={`w-full space-y-4 rounded-xl border border-white/10 bg-hl-panel/40 p-6 transition-all hover:bg-hl-panel/60 hover:shadow-xl ${USE_LEETCODE ? "hover:border-yellow-500/50 hover:shadow-yellow-500/10" : "hover:border-hl-rose/50 hover:shadow-hl-rose/10"}`}
         >
-          {/* Header - REDUCED PADDING (pb-3) */}
+          {/* Header */}
           <div className="flex items-center justify-between border-b border-white/5 pb-3">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg bg-white/5`}>
@@ -278,6 +276,7 @@ export function CodingStats() {
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-6 py-2">
+            {/* Total Solved */}
             <div className="bg-black/20 rounded-xl p-4 border border-white/5">
               <div className="flex items-center gap-2 mb-1">
                 <Target className="h-4 w-4 text-hl-cyan" />
@@ -286,12 +285,13 @@ export function CodingStats() {
               <p className="text-3xl font-bold text-white">{stats.total}</p>
             </div>
 
+            {/* Active Days (Replaced Rank) */}
             <div className="bg-black/20 rounded-xl p-4 border border-white/5">
               <div className="flex items-center gap-2 mb-1">
-                <Award className={`h-4 w-4 ${stats.color}`} />
-                <span className="text-[10px] text-hl-muted uppercase tracking-wider">Rank</span>
+                <Activity className={`h-4 w-4 ${stats.color}`} />
+                <span className="text-[10px] text-hl-muted uppercase tracking-wider">Active Days</span>
               </div>
-              <p className="text-3xl font-bold text-white">{stats.awards}</p>
+              <p className="text-3xl font-bold text-white">{stats.activeDays}</p>
             </div>
           </div>
 
