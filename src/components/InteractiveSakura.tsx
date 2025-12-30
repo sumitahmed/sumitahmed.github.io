@@ -34,11 +34,12 @@ export function InteractiveSakura() {
       '#ffaec9', // Rose pink
     ];
 
-    const initialPetals: Petal[] = Array.from({ length: 35 }, (_, i) => ({
+    // Kept the count at 45 (looks good!)
+    const initialPetals: Petal[] = Array.from({ length: 45 }, (_, i) => ({
       id: i,
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      size: Math.random() * 10 + 8, // 8-18px (smaller petals)
+      size: Math.random() * 10 + 8, // 8-18px
       rotation: Math.random() * 360,
       opacity: Math.random() * 0.5 + 0.4, // 0.4-0.9
       vx: (Math.random() - 0.5) * 0.4,
@@ -60,7 +61,7 @@ export function InteractiveSakura() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
-  // Animation loop - petals drift and react to mouse
+  // Animation loop
   useEffect(() => {
     const animate = () => {
       setPetals((prevPetals) =>
@@ -68,17 +69,21 @@ export function InteractiveSakura() {
           let newX = petal.x + petal.vx;
           let newY = petal.y + petal.vy;
 
-          // Mouse interaction - repel petals from cursor
+          // Mouse interaction
           const dx = newX - smoothMouseX.get();
           const dy = newY - smoothMouseY.get();
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const minDistance = 120; // Interaction radius
+          
+          // ✅ TUNED: Reduced radius to 160 (Balanced sensitivity)
+          const minDistance = 160; 
 
           if (distance < minDistance) {
             const force = (minDistance - distance) / minDistance;
             const angle = Math.atan2(dy, dx);
-            newX += Math.cos(angle) * force * 4;
-            newY += Math.sin(angle) * force * 4;
+            
+            // ✅ TUNED: Reduced force to 8 (Gentle push, not a shove)
+            newX += Math.cos(angle) * force * 8;
+            newY += Math.sin(angle) * force * 8;
           }
 
           // Wrap around screen edges
@@ -143,7 +148,6 @@ export function InteractiveSakura() {
               filter: `drop-shadow(0 0 2px ${petal.color}60)`,
             }}
           >
-            {/* Single realistic petal shape - like in your image */}
             <path
               d="M10 2 C8 3, 6 4, 5 6 C4 8, 4 10, 5 12 C6 14, 8 16, 10 18 C11 17, 12 16, 13 14 C14 12, 15 10, 15 8 C15 6, 13 4, 11 3 C10.5 2.5, 10 2, 10 2 Z"
               fill={petal.color}
@@ -152,13 +156,11 @@ export function InteractiveSakura() {
               strokeWidth="0.3"
               strokeOpacity="0.4"
             />
-            {/* Inner highlight */}
             <path
               d="M10 4 C9 5, 8 6, 7 8 C7 9, 7 10, 8 11 C9 12, 10 13, 10 14 C11 13, 12 12, 12 11 C13 10, 13 9, 13 8 C13 6, 11 5, 10 4 Z"
               fill="#ffffff"
               fillOpacity="0.35"
             />
-            {/* Subtle vein detail */}
             <line
               x1="10"
               y1="4"

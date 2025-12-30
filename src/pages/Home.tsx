@@ -2,15 +2,27 @@ import { Layout } from "../components/Layout";
 import { Hero } from "../components/Hero";
 import { AboutSection } from "../components/AboutSection";
 import { SkillsSection } from "../components/SkillsSection";
-import { Experience } from "../components/Experience"; // 👈 IMPORT ADDED
+import { Experience } from "../components/Experience";
 import { ProjectCard } from "../components/ProjectCard";
 import { ContactForm } from "../components/ContactForm";
 import { AchievementsSection } from "../components/AchievementsSection";
 import { PROJECTS_DATA } from "../lib/data";
 import { motion } from "framer-motion";
-import { MapPin, Mail, Github, Linkedin, Twitter, Instagram, Youtube } from "lucide-react";
+import { MapPin, Mail, Github, Linkedin, Twitter, Instagram, Youtube, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [visitorCount, setVisitorCount] = useState(355);
+
+  // ⚡ VISITOR COUNTER LOGIC
+  useEffect(() => {
+    const storedCount = localStorage.getItem("cyber_visitor_count");
+    let count = storedCount ? parseInt(storedCount, 10) : 355;
+    count += 1;
+    localStorage.setItem("cyber_visitor_count", count.toString());
+    setVisitorCount(count);
+  }, []);
+
   const scrollToContact = (e: React.MouseEvent) => {
     e.preventDefault();
     const contactSection = document.getElementById('contact');
@@ -19,8 +31,14 @@ export default function Home() {
     }
   };
 
+  // ✅ FIXED: Completely Transparent Social Links (No Box)
   const SocialLink = ({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-hl-cyan/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer relative z-20">
+    <a 
+      href={href} 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      className="group flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer relative z-20 hover:bg-white/5"
+    >
       <div className="text-hl-muted group-hover:text-white transition-colors">{icon}</div>
       <span className="text-[10px] text-hl-muted font-mono group-hover:text-hl-cyan uppercase tracking-wider">{label}</span>
     </a>
@@ -32,7 +50,6 @@ export default function Home() {
       <div id="about"><AboutSection /></div>
       <SkillsSection />
 
-      {/* 👇 ADDED EXPERIENCE SECTION HERE */}
       <Experience />
 
       <section id="projects" className="py-20">
@@ -61,7 +78,8 @@ export default function Home() {
         </motion.div>
       </section>
 
-      <footer className="border-t border-white/5 py-12 pb-32 xl:pb-12 relative z-30">
+      {/* ✅ FIXED: Transparent Footer (No Background Color, No Border) */}
+      <footer className="py-12 pb-32 xl:pb-12 relative z-30 bg-transparent border-t border-transparent">
         <div className="container mx-auto px-4 flex flex-col items-center gap-8">
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 w-full max-w-4xl">
               <SocialLink href="https://github.com/sumitahmed" icon={<Github className="w-5 h-5" />} label="GitHub" />
@@ -71,7 +89,7 @@ export default function Home() {
               <SocialLink href="https://www.youtube.com/@emm0rt4l04" icon={<Youtube className="w-5 h-5" />} label="YouTube" />
               <SocialLink href="https://leetcode.com/sumitahmed" icon={<img src="https://cdn.simpleicons.org/leetcode/ffffff" alt="LeetCode" className="w-5 h-5 opacity-80" />} label="LeetCode" />
               <SocialLink href="https://auth.geeksforgeeks.org/user/sumitahmed" icon={<img src="https://cdn.simpleicons.org/geeksforgeeks/ffffff" alt="GFG" className="w-5 h-5 opacity-80" />} label="GFG" />
-              <a href="https://codolio.com/profile/SumitKun" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-hl-cyan/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer relative z-20">
+              <a href="https://codolio.com/profile/SumitKun" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer relative z-20 hover:bg-white/5">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-hl-muted group-hover:text-white transition-colors"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 <span className="text-[10px] text-hl-muted font-mono group-hover:text-hl-cyan uppercase tracking-wider">Codolio</span>
               </a>
@@ -87,7 +105,13 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="text-center"><p className="text-xs text-hl-muted/50 font-mono mt-4">© 2025 Sumit Ahmed. All rights reserved.</p></div>
+            {/* ✅ FIXED: Transparent Visitor Counter (No Box) */}
+            <div className="flex items-center gap-2 text-xs font-mono text-gray-500 mt-4 px-4 py-2">
+              <Users className="w-3 h-3 text-hl-cyan" />
+              <span>VISITORS <span className="text-hl-cyan font-bold tracking-widest">#{visitorCount.toLocaleString()}</span></span>
+            </div>
+
+            <div className="text-center"><p className="text-xs text-hl-muted/50 font-mono">© 2025 Sumit Ahmed. All rights reserved.</p></div>
         </div>
       </footer>
     </Layout>

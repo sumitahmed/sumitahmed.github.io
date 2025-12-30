@@ -6,23 +6,28 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // DARK ZEN PALETTE
-        'hl-bg': '#050505',       // Deepest Ink Black
-        'hl-panel': '#0a0a0a',    // Smoked Glass
-        'hl-card': '#121212',     // Slightly lighter for hover
+        // 🌑 CYBERCORE BASE (The Void)
+        'hl-bg': '#020205',       // Almost pure black, tiny hint of blue
+        'hl-panel': '#0a0a12',    // Dark, cold plate
+        'hl-card': '#11111a',     // Slightly lighter UI element
         
-        // REPLACING CYAN WITH SAKURA PINK
-        'hl-cyan': '#ffb7c5',     // Pale Cherry Blossom Pink (The new main accent)
+        // 💿 METALLIC ACCENTS
+        'hl-cyan': '#a5b4fc',     // "Dark Blusing" -> Cold Silver-Blue (Rei Ayanami Hair color)
+        'hl-rose': '#ff003c',     // Glitch Red (System Warnings)
+        'hl-moss': '#ffffff',     // Pure Chromium White (High contrast text)
         
-        // Secondary Accents
-        'hl-rose': '#e04f5f',     // Torii Gate Red
-        'hl-moss': '#8b9bb4',     // Desaturated Blue-Grey (Replacing Green)
-        'hl-muted': '#9ca3af',    // Clean Grey text
+        // 🌫️ TEXT HIERARCHY
+        'hl-text': '#e2e8f0',     // Silver-White (Primary text)
+        'hl-muted': '#64748b',    // Slate Gray (Secondary text)
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-        display: ['Orbitron', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],     // Code / Data
+        display: ['Orbitron', 'sans-serif'],       // HEADERS (The Cyber Look)
+      },
+      backgroundImage: {
+        // The "Scanline" Texture Gradient
+        'scanlines': 'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2))',
       },
     },
   },

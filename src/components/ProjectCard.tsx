@@ -10,114 +10,115 @@ export function ProjectCard({ project }: { project: Project }) {
 
   return (
     <>
-      <TerminalWidget 
-        title={`~/projects/${project.id}`} 
-        noPadding 
-        className="hover:border-hl-cyan/50 transition-colors h-full flex flex-col"
-      >
-        {/* ✅ FIX ADDED HERE: Added onClick and cursor-pointer to the image container */}
-        <div 
-          onClick={() => setIsModalOpen(true)}
-          className="aspect-video overflow-hidden border-b border-white/5 relative group bg-black/40 cursor-pointer"
+      <div className="group relative h-full">
+        {/* Subtle Cyber Glow behind card */}
+        <div className="absolute -inset-0.5 bg-gradient-to-b from-hl-cyan/20 to-purple-600/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md -z-10" />
+
+        <TerminalWidget 
+          title={`~/projects/${project.id}`} 
+          noPadding 
+          className="h-full flex flex-col bg-[#050505]/95 border-white/10 hover:border-hl-cyan/50 transition-all duration-300 shadow-xl"
         >
-          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
-          
-          <img 
-            src={project.image} 
-            alt={project.title} 
-            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" 
-            onError={(e) => {
-              e.currentTarget.style.display = 'none'; 
-            }}
-          />
-          
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-none">
-            <button className="bg-black/80 backdrop-blur text-white px-4 py-2 rounded-full text-xs font-mono border border-white/20">
-              Click View Details to explore
-            </button>
-          </div>
-        </div>
-
-        <div className="p-5 space-y-4 flex flex-col flex-1 bg-transparent">
-          
-          <div className="flex justify-between items-start">
-            <h3 className="text-xl font-bold text-white tracking-tight">{project.title}</h3>
-            {project.featured && (
-              <span className="text-[10px] font-mono border border-hl-rose/50 text-hl-rose bg-hl-rose/10 px-2 py-0.5 rounded-full">
-                FEATURED
-              </span>
-            )}
+          {/* 1. IMAGE SECTION */}
+          <div 
+            onClick={() => setIsModalOpen(true)}
+            className="aspect-video overflow-hidden border-b border-white/10 relative bg-black/40 cursor-pointer"
+          >
+            <img 
+              src={project.image} 
+              alt={project.title} 
+              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" 
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+            
+            {/* Scanline Overlay (Visual only) */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_4px,3px_100%] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-overlay" />
+            
+            {/* Overlay Button */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 bg-black/40 backdrop-blur-[2px]">
+              <div className="bg-black/80 border border-hl-cyan text-hl-cyan px-4 py-2 rounded-sm text-xs font-mono tracking-widest uppercase flex items-center gap-2 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+                <BookOpen className="w-4 h-4" /> OPEN_FILE
+              </div>
+            </div>
           </div>
 
-          <p className="text-sm text-hl-muted leading-relaxed flex-1 line-clamp-3">
-            {project.description}
-          </p>
+          {/* 2. CONTENT SECTION */}
+          <div className="p-5 flex flex-col flex-1 gap-4">
+            
+            <h3 className="text-xl font-bold text-white tracking-tight font-display group-hover:text-hl-cyan transition-colors">
+              {project.title}
+            </h3>
 
-          <div className="flex flex-wrap gap-2">
-            {project.tags.slice(0, 4).map(tag => (
-              <span 
-                key={tag} 
-                className="text-xs font-mono text-hl-cyan bg-hl-cyan/5 border border-hl-cyan/10 px-2 py-1 rounded select-none"
-              >
-                {tag}
-              </span>
-            ))}
-            {project.tags.length > 4 && (
-              <span className="text-xs font-mono text-hl-muted px-1 py-1">+{project.tags.length - 4}</span>
-            )}
-          </div>
+            <p className="text-sm text-gray-300 leading-relaxed line-clamp-3 font-mono border-l-2 border-white/10 pl-3">
+              {project.description}
+            </p>
 
-          <div className="flex flex-wrap gap-3 pt-2">
-            <Button 
-              size="sm"
-              variant="default"
-              className="bg-white/10 hover:bg-white/20 text-white border-none flex-1"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <BookOpen className="w-4 h-4 mr-2 text-hl-cyan" /> View Details
-            </Button>
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 mt-auto pt-2">
+              {project.tags.slice(0, 4).map(tag => (
+                <span 
+                  key={tag} 
+                  className="text-[10px] font-bold font-mono text-hl-cyan bg-hl-cyan/10 border border-hl-cyan/30 px-2 py-1 rounded-sm"
+                >
+                  {tag}
+                </span>
+              ))}
+              {project.tags.length > 4 && (
+                <span className="text-[10px] font-mono text-gray-500 px-1 py-1">+{project.tags.length - 4}</span>
+              )}
+            </div>
 
-            {project.demoUrl && (
+            {/* BUTTONS (High Visibility) */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              
               <Button 
                 size="sm"
-                variant="outline"
-                className="border-white/10"
-                onClick={() => window.open(project.demoUrl, "_blank")}
+                className="bg-white/10 hover:bg-hl-cyan/20 text-white hover:text-hl-cyan border border-white/20 hover:border-hl-cyan/50 text-xs font-mono h-10 rounded-sm transition-all shadow-sm"
+                onClick={() => setIsModalOpen(true)}
               >
-                <ExternalLink className="w-4 h-4" />
+                <BookOpen className="w-3.5 h-3.5 mr-2" /> DETAILS
               </Button>
-            )}
 
-            {project.githubUrl && (
-              <Button 
-                size="sm" 
-                variant="outline"
-                className="border-white/10"
-                onClick={() => window.open(project.githubUrl, "_blank")}
-              >
-                <Github className="w-4 h-4" />
-              </Button>
-            )}
+              {project.demoUrl && (
+                <Button 
+                  size="sm"
+                  className="bg-white/10 hover:bg-purple-500/20 text-white hover:text-purple-300 border border-white/20 hover:border-purple-500/50 text-xs font-mono h-10 rounded-sm transition-all shadow-sm"
+                  onClick={() => window.open(project.demoUrl, "_blank")}
+                >
+                  <ExternalLink className="w-3.5 h-3.5 mr-2" /> DEMO
+                </Button>
+              )}
 
-            {project.youtubeUrl && (
-              <Button 
-                size="sm"
-                variant="outline"
-                className="bg-red-500/10 border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white transition-colors"
-                onClick={() => window.open(project.youtubeUrl, "_blank")}
-              >
-                <Youtube className="w-4 h-4 mr-2" /> Demo Video
-              </Button>
-            )}
+              {project.githubUrl && (
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  className="bg-transparent hover:bg-white/10 text-gray-300 hover:text-white border border-white/20 hover:border-white/40 text-xs font-mono h-10 rounded-sm"
+                  onClick={() => window.open(project.githubUrl, "_blank")}
+                >
+                  <Github className="w-3.5 h-3.5 mr-2" /> CODE
+                </Button>
+              )}
+
+              {project.youtubeUrl && (
+                <Button 
+                  size="sm"
+                  className="bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300 hover:border-red-500/60 text-xs font-mono h-10 rounded-sm transition-all"
+                  onClick={() => window.open(project.youtubeUrl, "_blank")}
+                >
+                  <Youtube className="w-3.5 h-3.5 mr-2" /> VIDEO
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </TerminalWidget>
+        </TerminalWidget>
 
-      <ProjectModal 
-        project={project} 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-      />
+        <ProjectModal 
+          project={project} 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+        />
+      </div>
     </>
   );
 }
