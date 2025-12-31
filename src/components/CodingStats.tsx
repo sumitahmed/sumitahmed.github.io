@@ -26,7 +26,7 @@ export function CodingStats() {
   const codolioUsername = "SumitKun";
   const leetcodeUsername = "sumitahmed";
 
-  // Codolio Data (UPDATED from Screenshot)
+  // Codolio Data
   const codolioData = {
     total: 144,
     activeDays: 33, // Replaces "Rank"
@@ -39,7 +39,7 @@ export function CodingStats() {
     link: `https://codolio.com/profile/${codolioUsername}`,
   };
 
-  // LeetCode Data (Placeholder structure to match)
+  // LeetCode Data
   const leetcodeData = {
     total: 15,
     activeDays: 0,
@@ -147,14 +147,14 @@ export function CodingStats() {
 
   if (loading) {
     return (
-      <div className="flex h-40 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-hl-cyan border-t-transparent" />
+      <div className="flex h-32 md:h-40 items-center justify-center">
+        <div className="h-6 w-6 md:h-8 md:w-8 animate-spin rounded-full border-4 border-hl-cyan border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-6 font-mono text-base w-full">
+    <div className="flex flex-col gap-4 md:gap-6 font-mono text-sm md:text-base w-full">
       
       {/* 1. GitHub Activity Card */}
       <a 
@@ -167,26 +167,26 @@ export function CodingStats() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="w-full space-y-4 rounded-xl border border-white/10 bg-hl-panel/40 p-6 transition-all hover:border-green-500/50 hover:bg-hl-panel/60 hover:shadow-xl hover:shadow-green-500/10"
+          className="w-full space-y-3 md:space-y-4 rounded-xl border border-white/10 bg-hl-panel/40 p-4 md:p-6 transition-all hover:border-green-500/50 hover:bg-hl-panel/60 hover:shadow-xl hover:shadow-green-500/10"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/5 pb-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-500/10 text-green-500">
-                <GitBranch className="h-5 w-5" />
+          <div className="flex items-center justify-between border-b border-white/5 pb-2 md:pb-3">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="p-1.5 md:p-2 rounded-lg bg-green-500/10 text-green-500">
+                <GitBranch className="h-4 w-4 md:h-5 md:w-5" />
               </div>
-              <span className="text-gray-200 group-hover:text-green-400 transition-colors font-bold text-base tracking-wide">
+              <span className="text-gray-200 group-hover:text-green-400 transition-colors font-bold text-sm md:text-base tracking-wide">
                 GitHub Activity
               </span>
             </div>
             <div className="text-right">
-              <span className="text-xl font-bold text-white">{githubData?.total}</span>
-              <span className="text-xs text-hl-muted ml-2">Contributions</span>
+              <span className="text-lg md:text-xl font-bold text-white">{githubData?.total}</span>
+              <span className="text-[10px] md:text-xs text-hl-muted ml-2">Contributions</span>
             </div>
           </div>
 
           {/* Graph Container */}
-          <div className="rounded-lg border border-white/5 bg-[#0d1117] p-4 opacity-90 group-hover:opacity-100 transition-opacity w-full overflow-hidden">
+          <div className="rounded-lg border border-white/5 bg-[#0d1117] p-3 md:p-4 opacity-90 group-hover:opacity-100 transition-opacity w-full overflow-hidden">
             <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
               <div className="flex flex-col min-w-max"> 
                 <div className="pl-8 w-full">
@@ -236,7 +236,7 @@ export function CodingStats() {
             </div>
           </div>
 
-          <div className="flex items-center justify-end text-xs text-hl-muted pt-1">
+          <div className="flex items-center justify-end text-[10px] md:text-xs text-hl-muted pt-1">
             <span className="flex items-center gap-2 group-hover:text-white transition-colors">
               View Profile <ExternalLink className="w-3 h-3" />
             </span>
@@ -255,54 +255,54 @@ export function CodingStats() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className={`w-full space-y-4 rounded-xl border border-white/10 bg-hl-panel/40 p-6 transition-all hover:bg-hl-panel/60 hover:shadow-xl ${USE_LEETCODE ? "hover:border-yellow-500/50 hover:shadow-yellow-500/10" : "hover:border-hl-rose/50 hover:shadow-hl-rose/10"}`}
+          className={`w-full space-y-3 md:space-y-4 rounded-xl border border-white/10 bg-hl-panel/40 p-4 md:p-6 transition-all hover:bg-hl-panel/60 hover:shadow-xl ${USE_LEETCODE ? "hover:border-yellow-500/50 hover:shadow-yellow-500/10" : "hover:border-hl-rose/50 hover:shadow-hl-rose/10"}`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/5 pb-3">
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg bg-white/5`}>
+          <div className="flex items-center justify-between border-b border-white/5 pb-2 md:pb-3">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className={`p-1.5 md:p-2 rounded-lg bg-white/5`}>
                 {USE_LEETCODE ? (
-                  <Terminal className={`h-5 w-5 ${stats.color}`} />
+                  <Terminal className={`h-4 w-4 md:h-5 md:w-5 ${stats.color}`} />
                 ) : (
-                  <Code2 className={`h-5 w-5 ${stats.color}`} />
+                  <Code2 className={`h-4 w-4 md:h-5 md:w-5 ${stats.color}`} />
                 )}
               </div>
-              <span className={`transition-colors font-bold text-base tracking-wide ${USE_LEETCODE ? "text-yellow-500" : "text-hl-rose"}`}>
+              <span className={`transition-colors font-bold text-sm md:text-base tracking-wide ${USE_LEETCODE ? "text-yellow-500" : "text-hl-rose"}`}>
                 {stats.label} Stats
               </span>
             </div>
-            <span className="text-xs text-hl-muted">@{USE_LEETCODE ? leetcodeUsername : codolioUsername}</span>
+            <span className="text-[10px] md:text-xs text-hl-muted">@{USE_LEETCODE ? leetcodeUsername : codolioUsername}</span>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-6 py-2">
+          <div className="grid grid-cols-2 gap-3 md:gap-6 py-1 md:py-2">
             {/* Total Solved */}
-            <div className="bg-black/20 rounded-xl p-4 border border-white/5">
+            <div className="bg-black/20 rounded-xl p-3 md:p-4 border border-white/5">
               <div className="flex items-center gap-2 mb-1">
-                <Target className="h-4 w-4 text-hl-cyan" />
-                <span className="text-[10px] text-hl-muted uppercase tracking-wider">Solved</span>
+                <Target className="h-3 w-3 md:h-4 md:w-4 text-hl-cyan" />
+                <span className="text-[9px] md:text-[10px] text-hl-muted uppercase tracking-wider">Solved</span>
               </div>
-              <p className="text-3xl font-bold text-white">{stats.total}</p>
+              <p className="text-xl md:text-3xl font-bold text-white">{stats.total}</p>
             </div>
 
-            {/* Active Days (Replaced Rank) */}
-            <div className="bg-black/20 rounded-xl p-4 border border-white/5">
+            {/* Active Days */}
+            <div className="bg-black/20 rounded-xl p-3 md:p-4 border border-white/5">
               <div className="flex items-center gap-2 mb-1">
-                <Activity className={`h-4 w-4 ${stats.color}`} />
-                <span className="text-[10px] text-hl-muted uppercase tracking-wider">Active Days</span>
+                <Activity className={`h-3 w-3 md:h-4 md:w-4 ${stats.color}`} />
+                <span className="text-[9px] md:text-[10px] text-hl-muted uppercase tracking-wider">Active Days</span>
               </div>
-              <p className="text-3xl font-bold text-white">{stats.activeDays}</p>
+              <p className="text-xl md:text-3xl font-bold text-white">{stats.activeDays}</p>
             </div>
           </div>
 
            {/* Progress Bar */}
-           <div className="space-y-3 pt-1">
-             <div className="flex h-3 w-full overflow-hidden rounded-full bg-white/5">
+           <div className="space-y-2 md:space-y-3 pt-1">
+             <div className="flex h-2.5 md:h-3 w-full overflow-hidden rounded-full bg-white/5">
                 <div className="bg-hl-moss" style={{ width: `${(stats.easy/stats.total)*100}%` }} />
                 <div className="bg-hl-cyan" style={{ width: `${(stats.medium/stats.total)*100}%` }} />
                 <div className={stats.barColor} style={{ width: `${(stats.hard/stats.total)*100}%` }} />
              </div>
-             <div className="flex justify-between text-xs font-medium opacity-90 px-1">
+             <div className="flex justify-between text-[10px] md:text-xs font-medium opacity-90 px-1">
                <span className="text-hl-moss">Easy: {stats.easy}</span>
                <span className="text-hl-cyan">Med: {stats.medium}</span>
                <span className={stats.color}>Hard: {stats.hard}</span>

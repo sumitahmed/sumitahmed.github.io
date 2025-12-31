@@ -3,9 +3,8 @@ import { useState, useEffect } from "react";
 import { CyberBackground } from "./CyberBackground";
 import { LiveActivity } from "./LiveActivity";
 import { EngagementPopup } from "./EngagementPopup";
-import { MouseGlow } from "./MouseGlow"; // 👈 NEW IMPORT
+import { MouseGlow } from "./MouseGlow";
 
-// Define Interface for Lanyard (Discord Status)
 interface LanyardData {
   discord_status: 'online' | 'idle' | 'dnd' | 'offline';
   spotify?: {
@@ -35,7 +34,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const DISCORD_ID = '608572578231091240';
 
-  // --- EFFECT: Strict Network Ping (Latency) ---
   useEffect(() => {
     const measurePing = async () => {
       if (!navigator.onLine) { setPing(null); return; }
@@ -53,7 +51,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return () => clearInterval(timer);
   }, []);
 
-  // --- EFFECT: Fetch Sumit's Discord Status ---
   useEffect(() => {
     const cached = localStorage.getItem('last_played_song');
     if (cached) setLastPlayed(JSON.parse(cached));
@@ -79,19 +76,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Clock Timer
   useEffect(() => { 
     const t = setInterval(() => setTime(new Date()), 1000); 
     return () => clearInterval(t); 
   }, []);
   
-  // Uptime Timer
   useEffect(() => { 
     const t = setInterval(() => setUptime(p => p + 1), 1000); 
     return () => clearInterval(t); 
   }, []);
 
-  // Scroll Spy
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["#", "#about", "#skills", "#experience", "#projects", "#contact"];
@@ -109,7 +103,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Battery API
   useEffect(() => {
     const updateBattery = async () => {
       try {
@@ -150,70 +143,62 @@ export function Layout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-hl-bg text-gray-100 relative overflow-hidden selection:bg-hl-cyan/30 selection:text-white">
+    <div className="min-h-screen bg-hl-bg text-gray-100 relative overflow-hidden selection:bg-hl-cyan/30 selection:text-white font-sans">
       
-      {/* 🔮 VISUAL LAYERS */}
-      <div className="scanlines opacity-20 pointer-events-none" />
-      <div className="noise-overlay opacity-20 pointer-events-none" />
+      <div className="scanlines opacity-10 pointer-events-none" />
+      <div className="noise-overlay opacity-10 pointer-events-none" />
       
       <CyberBackground />
-      <MouseGlow /> {/* 👈 Added the glowing light tracker */}
+      <MouseGlow /> 
 
-      {/* Header / System Bar */}
-      <header className="fixed top-0 left-0 right-0 h-10 bg-[#020205]/80 backdrop-blur-md border-b border-white/10 flex items-center justify-between px-4 z-50 text-xs font-mono select-none">
+      {/* ✅ COMPACT RESPONSIVE HEADER */}
+      <header className="fixed top-0 left-0 right-0 h-9 md:h-10 bg-[#020205]/90 backdrop-blur-md border-b border-white/5 flex items-center px-2 md:px-4 z-50 text-[10px] md:text-xs font-mono select-none">
         
-        {/* Left: Identity */}
-        <div className="flex items-center gap-4">
+        {/* 1. Left: Identity */}
+        <div className="flex items-center gap-2 md:gap-4 shrink-0 mr-auto">
           <a href="mailto:sksumitahmed007@gmail.com" className="flex items-center gap-2 hover:text-hl-cyan transition-colors cursor-pointer group">
             <div className="p-1 rounded bg-white/5 group-hover:bg-hl-cyan/20 transition-colors">
-              <Terminal className="w-3.5 h-3.5 group-hover:text-hl-cyan" />
+              <Terminal className="w-3 h-3 group-hover:text-hl-cyan" />
             </div>
-            <span className="font-bold tracking-tight text-hl-muted group-hover:text-white">sksumitahmed007@gmail.com</span>
+            {/* Hidden email on mobile to save space */}
+            <span className="hidden md:block font-bold tracking-tight text-hl-muted group-hover:text-white truncate">
+              sksumitahmed007@gmail.com
+            </span>
           </a>
         </div>
 
-        {/* Center: System Status */}
-        <div className="hidden md:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+        {/* 2. Center: Status (Flexible width) */}
+        {/* ✅ FIXED: Uses flex-1 and overflow-hidden to fit between left/right items without overlap */}
+        <div className="flex justify-center items-center mx-2 flex-1 overflow-hidden min-w-0">
           {sumitStatus !== 'offline' ? (
             <LiveActivity /> 
           ) : (
-            <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-hl-muted flex items-center gap-2">
+            <div className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-hl-muted flex items-center gap-1.5 whitespace-nowrap">
                <Moon className="w-3 h-3" />
-               <span>System Offline</span>
+               <span className="hidden sm:inline">System Offline</span>
             </div>
           )}
         </div>
 
-        {/* Right: Modules */}
-        <div className="flex items-center gap-3">
+        {/* 3. Right: Modules (Compact) */}
+        <div className="flex items-center gap-1.5 md:gap-3 shrink-0 ml-auto">
           
-          {!isListeningNow && lastPlayed && (
-            <div 
-              className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-hl-cyan/30 transition-colors group cursor-default"
-            >
-              <Music className="w-3 h-3 text-hl-muted group-hover:text-hl-cyan" />
-              <span className="text-gray-500 max-w-[150px] truncate group-hover:text-white transition-colors">
-                {lastPlayed.song}
-              </span>
-            </div>
-          )}
-
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-hl-muted hover:text-white transition-colors cursor-default" title="Latency">
+          <div className="hidden lg:flex items-center gap-2 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-hl-muted hover:text-white transition-colors cursor-default" title="Latency">
             <Activity className={`w-3 h-3 ${ping && ping < 100 ? 'text-hl-cyan' : 'text-hl-rose'}`} />
             <span className="tabular-nums">{ping !== null ? `${ping}ms` : '--'}</span>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-hl-muted hover:text-white transition-colors cursor-default" title="Uptime">
+          <div className="hidden lg:flex items-center gap-2 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-hl-muted hover:text-white transition-colors cursor-default" title="Uptime">
             <Wifi className="w-3 h-3 text-hl-muted" />
             <span className="tabular-nums">{formatUptime(uptime)}</span>
           </div>
 
-          <div className={`flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 transition-colors cursor-default ${getBatteryColor()}`} title={`Battery: ${batteryLevel}%`}>
+          <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 transition-colors cursor-default ${getBatteryColor()}`} title={`Battery: ${batteryLevel}%`}>
             <Zap className={`w-3 h-3 ${isCharging ? 'fill-current' : ''}`} />
             <span className="tabular-nums">{batteryLevel}%</span>
           </div>
           
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-hl-cyan/10 border border-hl-cyan/20 text-hl-cyan cursor-default">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-hl-cyan/10 border border-hl-cyan/20 text-hl-cyan cursor-default">
             <Clock className="w-3 h-3" />
             <span className="tabular-nums font-bold">
               {time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
@@ -223,15 +208,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Desktop Vertical Nav */}
-      <div className="fixed left-6 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-4 z-40">
+      <div className="fixed left-4 md:left-6 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-3 z-40">
         {navItems.map((item) => {
           const isActive = activeSection === item.path;
           return (
             <a key={item.label} href={item.path} className={`group relative p-2 rounded-lg transition-all duration-300 hover:bg-white/5 ${isActive ? 'bg-white/5' : ''}`}>
-              <item.icon className={`w-5 h-5 transition-colors ${isActive ? 'text-hl-cyan drop-shadow-[0_0_8px_rgba(165,180,252,0.6)]' : 'text-hl-muted group-hover:text-hl-cyan'}`} />
-              
-              {/* Tooltip */}
-              <span className="absolute left-full ml-4 px-2 py-1 bg-hl-panel border border-white/10 rounded-sm text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none text-hl-cyan shadow-xl">
+              <item.icon className={`w-4 h-4 md:w-5 md:h-5 transition-colors ${isActive ? 'text-hl-cyan drop-shadow-[0_0_8px_rgba(165,180,252,0.6)]' : 'text-hl-muted group-hover:text-hl-cyan'}`} />
+              <span className="absolute left-full ml-4 px-2 py-1 bg-hl-panel border border-white/10 rounded-sm text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none text-hl-cyan shadow-xl">
                 {item.label}
               </span>
             </a>
@@ -239,13 +222,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         })}
       </div>
 
-      <main className="pt-16 px-4 md:px-8 max-w-7xl mx-auto relative z-10">{children}</main>
+      <main className="pt-14 px-4 md:px-8 max-w-7xl mx-auto relative z-10">{children}</main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-hl-panel/80 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 flex items-center gap-6 z-50 shadow-2xl xl:hidden">
+      <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-hl-panel/90 backdrop-blur-xl border border-white/10 rounded-full px-5 py-2.5 flex items-center gap-5 z-50 shadow-2xl xl:hidden">
         {navItems.map((item) => (
-          <a key={item.label} href={item.path} className={`p-2 rounded-lg transition-all ${activeSection === item.path ? 'text-hl-cyan scale-110 drop-shadow-[0_0_8px_rgba(165,180,252,0.6)]' : 'text-hl-muted hover:text-hl-cyan'}`}>
-            <item.icon className="w-5 h-5" />
+          <a key={item.label} href={item.path} className={`p-1.5 rounded-lg transition-all ${activeSection === item.path ? 'text-hl-cyan scale-110 drop-shadow-[0_0_8px_rgba(165,180,252,0.6)]' : 'text-hl-muted hover:text-hl-cyan'}`}>
+            <item.icon className="w-4 h-4" />
           </a>
         ))}
       </nav>

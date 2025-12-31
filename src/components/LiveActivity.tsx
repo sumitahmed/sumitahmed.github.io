@@ -91,20 +91,23 @@ export function LiveActivity() {
   const getIcon = () => {
     switch (icon) {
       case 'code':
-        return <Code className="w-3 h-3 text-blue-400" />;
+        return <Code className="w-3 h-3 text-blue-400 shrink-0" />;
       case 'music':
-        return <Music className="w-3 h-3 text-green-400" />;
+        return <Music className="w-3 h-3 text-green-400 shrink-0" />;
       case 'game':
-        return <Gamepad2 className="w-3 h-3 text-purple-400" />;
+        return <Gamepad2 className="w-3 h-3 text-purple-400 shrink-0" />;
       default:
-        return <Radio className="w-3 h-3 text-yellow-400" />;
+        return <Radio className="w-3 h-3 text-yellow-400 shrink-0" />;
     }
   };
 
   return (
-    <div className="flex items-center gap-1.5 animate-in fade-in duration-500">
+    <div className="flex items-center gap-2 animate-in fade-in duration-500 min-w-0">
       {getIcon()}
-      <span className="text-hl-muted max-w-xs truncate">{activity}</span>
+      {/* ✅ FIX: Responsive max-width. Small on mobile (100px), normal on desktop. */}
+      <span className="text-hl-muted truncate max-w-[100px] md:max-w-xs text-[10px] md:text-xs font-mono">
+        {activity}
+      </span>
     </div>
   );
 }

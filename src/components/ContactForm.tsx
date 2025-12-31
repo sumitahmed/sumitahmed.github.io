@@ -10,7 +10,6 @@ export function ContactForm() {
   const FORMSPREE_ID = "xjknezzo"; 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    // ... (Keep existing submission logic)
     e.preventDefault();
     setStatus("submitting");
     const form = e.currentTarget;
@@ -25,7 +24,6 @@ export function ContactForm() {
   };
 
   if (status === "success") {
-    // ... (Keep existing success UI)
     return (
       <TerminalWidget title="success.log" className="max-w-xl mx-auto">
         <div className="flex flex-col items-center justify-center py-10 text-center space-y-4 px-6">
