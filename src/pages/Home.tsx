@@ -15,21 +15,34 @@ export default function Home() {
   // Start with a fallback number so it doesn't look empty while loading
   const [visitorCount, setVisitorCount] = useState(355);
 
-  // ⚡ GLOBAL VISITOR COUNTER LOGIC
+  // ⚡ GLOBAL VISITOR COUNTER LOGIC (FIXED)
   useEffect(() => {
     const updateCount = async () => {
+      const namespace = "sumitahmed.github.io";
+      const key = "visits";
+      const timestamp = new Date().getTime(); // 👈 Cache Buster
+
       try {
-        // 1. We use 'sumitahmed.github.io' as the unique namespace
-        // 2. We use 'visits' as the counter key
-        // 3. The '/up' endpoint adds +1 and returns the new total
-        const response = await fetch("https://api.counterapi.dev/v1/sumitahmed.github.io/visits/up");
+        // 1. Try to INCREMENT with Anti-Cache Timestamp
+        const response = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up?t=${timestamp}`, {
+          cache: "no-store", 
+          headers: { "Content-Type": "application/json" }
+        });
         
         if (response.ok) {
           const data = await response.json();
-          // The API returns: { "count": 123 }
           setVisitorCount(data.count);
         } else {
-          console.warn("Counter API error, using fallback.");
+          // 2. If blocked (Rate Limit/Same IP), just READ the value (also with timestamp)
+          console.warn("Counter increment blocked (Rate Limit), fetching current count...");
+          const getRes = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}?t=${timestamp}`, {
+            cache: "no-store"
+          });
+          
+          if (getRes.ok) {
+            const data = await getRes.json();
+            setVisitorCount(data.count);
+          }
         }
       } catch (error) {
         console.error("Counter Error:", error);
