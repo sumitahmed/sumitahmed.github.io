@@ -2,8 +2,32 @@ import { Button } from "./ui/button";
 import { ArrowRight, Download, Github, Linkedin, Mail, Terminal } from "lucide-react";
 import { motion } from "framer-motion";
 import { DraggableWindow } from "./DraggableWindow";
+import { useEffect, useState, useRef } from "react";
 
 export function Hero() {
+  const [currentTheme, setCurrentTheme] = useState<'dark' | 'light'>('dark');
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // 1. THEME OBSERVER
+  useEffect(() => {
+    const updateTheme = () => {
+      const theme = document.documentElement.getAttribute('data-theme') as 'dark' | 'light' || 'dark';
+      setCurrentTheme(theme);
+    };
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    updateTheme();
+
+    return () => observer.disconnect();
+  }, []);
+
+  // 2. VIDEO SWAPPER
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [currentTheme]);
 
   const scrollToProjects = () => {
     const projectsSection = document.getElementById('projects');
@@ -22,21 +46,36 @@ export function Hero() {
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center py-12 md:py-20 overflow-hidden">
       
-      {/* 🎥 CYBERCORE VIDEO BACKGROUND */}
-      <div className="absolute inset-0 z-0 bg-[#020205]">
+      {/* 🎥 DYNAMIC VIDEO BACKGROUND */}
+      <div className="absolute inset-0 z-0 bg-hl-bg transition-colors duration-500">
+        
+        {/* VIDEO LAYER */}
         <video
+          ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-screen"
+          className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-500"
         >
-          <source src="/cyber-background.mp4" type="video/mp4" />
+          <source 
+            src={currentTheme === 'dark' ? "/cyber-dark.mp4" : "/cyber-light.mp4"} 
+            type="video/mp4" 
+          />
         </video>
         
-        {/* Fallback Grid & Vignette */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(165,180,252,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(165,180,252,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,black,transparent)]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#020205] via-transparent to-[#020205]" />
+        {/* 🕸️ HALFTONE DOTS (Texture) - Reduced to 10% Opacity */}
+        <div className="absolute inset-0 z-10 pointer-events-none opacity-10 bg-[radial-gradient(circle,currentColor_1px,transparent_1px)] bg-[size:4px_4px] text-hl-text" />
+
+        {/* 🌑 HEAVY VIGNETTE (Blends corners into background) */}
+        {/* This radial gradient goes from transparent in the center to full background color at edges */}
+        <div className="absolute inset-0 z-20 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_30%,var(--bg-primary)_100%)]" />
+
+        {/* Bottom Fade (Seamless transition to next section) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-hl-bg via-transparent to-transparent z-20" />
+        
+        {/* Tint Overlay (Optional adjustment layer) */}
+        <div className={`absolute inset-0 z-0 transition-colors duration-500 ${currentTheme === 'light' ? 'bg-white/5' : 'bg-black/10'}`} />
       </div>
 
       <div className="container px-4 md:px-6 relative z-40 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
@@ -53,7 +92,7 @@ export function Hero() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.3, type: "spring" }}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-hl-cyan/5 border border-hl-cyan/20 text-hl-cyan text-[10px] md:text-xs font-mono tracking-widest uppercase backdrop-blur-md rounded-full"
+            className="inline-flex items-center gap-2 px-3 py-1 bg-hl-cyan/5 border border-hl-cyan/20 text-hl-cyan text-[10px] md:text-xs font-mono tracking-widest uppercase backdrop-blur-md rounded-full shadow-lg"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-hl-cyan opacity-75"></span>
@@ -72,28 +111,28 @@ export function Hero() {
               Hello, I'm
             </motion.h2>
             
-            {/* NAME HEADER - Scaled down slightly for '100% view' feel */}
+            {/* NAME HEADER */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="text-4xl md:text-6xl font-bold font-display leading-tight tracking-tighter text-white"
+              className="text-4xl md:text-6xl font-bold font-display leading-tight tracking-tighter text-hl-text drop-shadow-lg"
             >
               SUMIT <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-hl-cyan via-white to-hl-cyan animate-pulse">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-hl-cyan via-hl-text to-hl-cyan animate-pulse">
                 AHMED
               </span>
             </motion.h1>
           </div>
 
-          {/* BIO - UPDATED TEXT */}
+          {/* BIO */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-base md:text-lg text-gray-400 max-w-lg leading-relaxed mx-auto lg:mx-0 font-mono"
+            className="text-base md:text-lg text-hl-muted max-w-lg leading-relaxed mx-auto lg:mx-0 font-mono drop-shadow-md"
           >
-            Full Stack Developer & Student. I build web apps that actually ship and obsess over clean backend architecture & aesthetically pleasing UI. Currently exploring <span className="text-white">DevOps pipelines</span> and <span className="text-white">scalable cloud architectures</span>.
+            Full Stack Developer & Student. I build web apps that actually ship and obsess over clean backend architecture & aesthetically pleasing UI. Currently exploring <span className="text-hl-text font-bold">DevOps pipelines</span> and <span className="text-hl-text font-bold">scalable cloud architectures</span>.
           </motion.p>
 
           <motion.div
@@ -104,7 +143,7 @@ export function Hero() {
           >
             <Button
               onClick={scrollToProjects}
-              className="h-10 md:h-11 px-6 bg-hl-cyan text-black hover:bg-white hover:shadow-[0_0_20px_rgba(165,180,252,0.4)] transition-all font-bold tracking-wide font-display hover:scale-105"
+              className="h-10 md:h-11 px-6 bg-hl-cyan text-hl-bg hover:bg-hl-text hover:text-hl-bg hover:shadow-[0_0_20px_rgba(165,180,252,0.4)] transition-all font-bold tracking-wide font-display hover:scale-105"
             >
               View Projects <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
@@ -112,7 +151,7 @@ export function Hero() {
             <a href="/resume.pdf" download="Sumit_Ahmed_CV.pdf">
               <Button
                 variant="outline"
-                className="h-10 md:h-11 px-6 border-white/20 text-gray-300 hover:bg-white/10 hover:text-white hover:border-hl-cyan/50 transition-all font-mono hover:scale-105"
+                className="h-10 md:h-11 px-6 border-hl-border text-hl-muted hover:bg-hl-panel hover:text-hl-text hover:border-hl-cyan/50 transition-all font-mono hover:scale-105 backdrop-blur-sm"
               >
                 Download CV <Download className="ml-2 w-4 h-4" />
               </Button>
@@ -124,7 +163,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="flex items-center gap-5 pt-2 text-gray-500 justify-center lg:justify-start"
+            className="flex items-center gap-5 pt-2 text-hl-muted justify-center lg:justify-start"
           >
             {[
               { icon: Github, link: "https://github.com/sumitahmed" },
@@ -153,7 +192,7 @@ export function Hero() {
 
             <DraggableWindow
               title="user_profile.sh"
-              className="w-full border-hl-cyan/30 bg-[#050505]/40 backdrop-blur-xl shadow-[0_0_40px_-10px_rgba(165,180,252,0.15)]"
+              className="w-full border-hl-cyan/30 bg-hl-panel/60 backdrop-blur-xl shadow-[0_0_40px_-10px_rgba(165,180,252,0.25)]"
             >
               <div className="flex flex-col items-center gap-5 text-center p-5 md:p-6">
                 
@@ -162,7 +201,7 @@ export function Hero() {
                   {/* Rotating Ring */}
                   <div className="absolute inset-0 rounded-full border-2 border-hl-cyan/50 shadow-[0_0_20px_rgba(165,180,252,0.4)] animate-[spin_10s_linear_infinite]" />
                   
-                  <div className="w-full h-full rounded-full overflow-hidden relative border-2 border-white/10">
+                  <div className="w-full h-full rounded-full overflow-hidden relative border-2 border-hl-border">
                     <img
                       src="/profile.jpeg" 
                       alt="Sumit Ahmed"
@@ -177,27 +216,27 @@ export function Hero() {
                 </div>
 
                 <div className="space-y-2 w-full px-2">
-                  <div className="flex justify-between text-xs font-mono text-gray-500 border-b border-white/5 pb-2">
+                  <div className="flex justify-between text-xs font-mono text-hl-muted border-b border-hl-border pb-2">
                     <span>ROLE</span><span className="text-hl-cyan font-bold tracking-wider">Full Stack Dev</span>
                   </div>
-                  <div className="flex justify-between text-xs font-mono text-gray-500 border-b border-white/5 pb-2">
-                    <span>LEVEL</span><span className="text-white font-bold tracking-wider">Shipping Code</span>
+                  <div className="flex justify-between text-xs font-mono text-hl-muted border-b border-hl-border pb-2">
+                    <span>LEVEL</span><span className="text-hl-text font-bold tracking-wider">Shipping Code</span>
                   </div>
-                  <div className="flex justify-between text-xs font-mono text-gray-500 border-b border-white/5 pb-2">
-                    <span>LOCATION</span><span className="text-gray-300 font-bold tracking-wider">Remote / On-site</span>
+                  <div className="flex justify-between text-xs font-mono text-hl-muted border-b border-hl-border pb-2">
+                    <span>LOCATION</span><span className="text-hl-text/80 font-bold tracking-wider">Remote / On-site</span>
                   </div>
-                  <div className="flex justify-between text-xs font-mono text-gray-500 pt-1">
+                  <div className="flex justify-between text-xs font-mono text-hl-muted pt-1">
                     <span>STATUS</span><span className="text-hl-cyan font-bold animate-pulse">Building / Debugging</span>
                   </div>
                 </div>
 
                 {/* Terminal Footer */}
-                <div className="w-full bg-black/60 rounded p-3 text-left font-mono text-xs space-y-2 border border-white/10 shadow-inner relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-[1px] bg-white/20 animate-[loading_2s_linear_infinite]" />
+                <div className="w-full bg-hl-card/80 rounded p-3 text-left font-mono text-xs space-y-2 border border-hl-border shadow-inner relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-[1px] bg-hl-text/20 animate-[loading_2s_linear_infinite]" />
                   <p className="text-hl-cyan font-bold flex gap-2">
                     $ cat summary.txt
                   </p>
-                  <p className="text-gray-400 leading-relaxed">
+                  <p className="text-hl-muted leading-relaxed">
                     I make software come alive. Specializing in transforming raw ideas into live, interactive products.
                   </p>
                   <p className="text-hl-cyan animate-pulse">_</p>

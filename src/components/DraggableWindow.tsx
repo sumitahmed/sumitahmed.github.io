@@ -201,8 +201,7 @@ export function DraggableWindow({
             y: hasBeenDragged && !isMaximized && !isMobile ? offset.y : 0,
           }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          // 👇 UPDATED: High transparency (20%) + High Blur (xl)
-          className="flex flex-col bg-hl-panel/20 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl w-full"
+          className="flex flex-col bg-hl-panel/20 backdrop-blur-xl border border-hl-border rounded-lg shadow-2xl w-full"
           style={{
             width: isMaximized
               ? "min(700px, 90vw)"
@@ -217,7 +216,7 @@ export function DraggableWindow({
             maxHeight: isMaximized ? "85vh" : "none",
           }}
         >
-          {/* Resize Handles (Desktop Only) */}
+          {/* Resize Handles */}
           {!isMaximized && !isMinimized && !isMobile && (
             <>
               <div className="absolute -top-1 -left-1 w-4 h-4 cursor-nw-resize z-50" onMouseDown={(e) => handleResizeStart(e, "nw")} />
@@ -233,8 +232,7 @@ export function DraggableWindow({
 
           {/* Window Header */}
           <div
-            // 👇 UPDATED: Header is slightly more visible (30%) but still glassy
-            className="flex items-center justify-between px-3 py-2 bg-hl-panel/30 backdrop-blur-md border-b border-white/10 select-none rounded-t-lg relative flex-shrink-0"
+            className="flex items-center justify-between px-3 py-2 bg-hl-card/50 backdrop-blur-md border-b border-hl-border select-none rounded-t-lg relative flex-shrink-0"
             onMouseDown={handleMouseDown}
             style={{
               cursor: isMaximized || isMobile ? "default" : "grab",
@@ -252,10 +250,10 @@ export function DraggableWindow({
             </div>
 
             <div className="flex items-center gap-1" style={{ pointerEvents: "auto" }} onMouseDown={(e) => e.stopPropagation()}>
-              <button onClick={handleMinimize} className="p-1.5 hover:bg-white/10 rounded transition-colors text-hl-muted hover:text-white">
+              <button onClick={handleMinimize} className="p-1.5 hover:bg-hl-text/10 rounded transition-colors text-hl-muted hover:text-hl-text">
                 <Minus className="w-3 h-3 md:w-4 md:h-4" />
               </button>
-              <button onClick={handleMaximize} className="p-1.5 hover:bg-white/10 rounded transition-colors text-hl-muted hover:text-white">
+              <button onClick={handleMaximize} className="p-1.5 hover:bg-hl-text/10 rounded transition-colors text-hl-muted hover:text-hl-text">
                 {isMaximized ? <Minimize2 className="w-3 h-3 md:w-4 md:h-4" /> : <Maximize2 className="w-3 h-3 md:w-4 md:h-4" />}
               </button>
               <button onClick={handleClose} className="p-1.5 hover:bg-red-500/20 rounded transition-colors text-hl-muted hover:text-red-400">
@@ -272,7 +270,6 @@ export function DraggableWindow({
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                // 👇 UPDATED: Transparent content background to let the shell's blur do the work
                 className={`bg-transparent rounded-b-lg ${isMaximized ? "flex-1 overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
                 style={size.height > 0 && !isMaximized && !isMobile ? { maxHeight: `${size.height - 40}px` } : {}}
               >
@@ -306,7 +303,7 @@ export function DraggableWindow({
                     <X className="w-6 h-6 text-hl-cyan" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white">Hold Up! 🛑</h3>
+                    <h3 className="text-lg font-bold text-hl-text">Hold Up! 尅</h3>
                     <p className="text-xs text-hl-muted">You're about to miss something cool...</p>
                   </div>
                 </div>
@@ -316,9 +313,9 @@ export function DraggableWindow({
                 </p>
                 <div className="flex flex-col md:flex-row gap-3">
                   <button onClick={() => setShowCloseModal(false)} className="px-4 py-2 bg-hl-cyan hover:bg-hl-cyan/80 text-hl-bg font-semibold rounded-lg">
-                    Okay, I'll stay! 🎉
+                    Okay, I'll stay! 脂
                   </button>
-                  <button onClick={() => setShowCloseModal(false)} className="px-4 py-2 border border-white/10 hover:bg-white/5 text-hl-muted rounded-lg">
+                  <button onClick={() => setShowCloseModal(false)} className="px-4 py-2 border border-hl-border hover:bg-hl-card text-hl-muted rounded-lg">
                     Maybe later
                   </button>
                 </div>

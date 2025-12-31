@@ -17,12 +17,12 @@ export function ProjectCard({ project }: { project: Project }) {
         <TerminalWidget 
           title={`~/projects/${project.id}`} 
           noPadding 
-          className="h-full flex flex-col bg-[#050505]/95 border-white/10 hover:border-hl-cyan/50 transition-all duration-300 shadow-xl"
+          className="h-full flex flex-col bg-hl-panel/95 border-hl-border hover:border-hl-cyan/50 transition-all duration-300 shadow-xl"
         >
           {/* 1. IMAGE SECTION */}
           <div 
             onClick={() => setIsModalOpen(true)}
-            className="aspect-video overflow-hidden border-b border-white/10 relative bg-black/40 cursor-pointer"
+            className="aspect-video overflow-hidden border-b border-hl-border relative bg-hl-card cursor-pointer"
           >
             <img 
               src={project.image} 
@@ -31,7 +31,7 @@ export function ProjectCard({ project }: { project: Project }) {
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
             
-            {/* Scanline Overlay (Visual only) */}
+            {/* Scanline Overlay */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_4px,3px_100%] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-overlay" />
             
             {/* Overlay Button */}
@@ -45,11 +45,11 @@ export function ProjectCard({ project }: { project: Project }) {
           {/* 2. CONTENT SECTION */}
           <div className="p-5 flex flex-col flex-1 gap-4">
             
-            <h3 className="text-xl font-bold text-white tracking-tight font-display group-hover:text-hl-cyan transition-colors">
+            <h3 className="text-xl font-bold text-hl-text tracking-tight font-display group-hover:text-hl-cyan transition-colors">
               {project.title}
             </h3>
 
-            <p className="text-sm text-gray-300 leading-relaxed line-clamp-3 font-mono border-l-2 border-white/10 pl-3">
+            <p className="text-sm text-hl-muted leading-relaxed line-clamp-3 font-mono border-l-2 border-hl-border pl-3">
               {project.description}
             </p>
 
@@ -64,16 +64,16 @@ export function ProjectCard({ project }: { project: Project }) {
                 </span>
               ))}
               {project.tags.length > 4 && (
-                <span className="text-[10px] font-mono text-gray-500 px-1 py-1">+{project.tags.length - 4}</span>
+                <span className="text-[10px] font-mono text-hl-muted px-1 py-1">+{project.tags.length - 4}</span>
               )}
             </div>
 
-            {/* BUTTONS (High Visibility) */}
+            {/* BUTTONS */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               
               <Button 
                 size="sm"
-                className="bg-white/10 hover:bg-hl-cyan/20 text-white hover:text-hl-cyan border border-white/20 hover:border-hl-cyan/50 text-xs font-mono h-10 rounded-sm transition-all shadow-sm"
+                className="bg-hl-card hover:bg-hl-cyan/20 text-hl-text hover:text-hl-cyan border border-hl-border hover:border-hl-cyan/50 text-xs font-mono h-10 rounded-sm transition-all shadow-sm"
                 onClick={() => setIsModalOpen(true)}
               >
                 <BookOpen className="w-3.5 h-3.5 mr-2" /> DETAILS
@@ -82,7 +82,7 @@ export function ProjectCard({ project }: { project: Project }) {
               {project.demoUrl && (
                 <Button 
                   size="sm"
-                  className="bg-white/10 hover:bg-purple-500/20 text-white hover:text-purple-300 border border-white/20 hover:border-purple-500/50 text-xs font-mono h-10 rounded-sm transition-all shadow-sm"
+                  className="bg-hl-card hover:bg-purple-500/20 text-hl-text hover:text-purple-400 border border-hl-border hover:border-purple-500/50 text-xs font-mono h-10 rounded-sm transition-all shadow-sm"
                   onClick={() => window.open(project.demoUrl, "_blank")}
                 >
                   <ExternalLink className="w-3.5 h-3.5 mr-2" /> DEMO
@@ -93,7 +93,7 @@ export function ProjectCard({ project }: { project: Project }) {
                 <Button 
                   size="sm" 
                   variant="outline"
-                  className="bg-transparent hover:bg-white/10 text-gray-300 hover:text-white border border-white/20 hover:border-white/40 text-xs font-mono h-10 rounded-sm"
+                  className="bg-transparent hover:bg-hl-card text-hl-muted hover:text-hl-text border border-hl-border hover:border-hl-text/40 text-xs font-mono h-10 rounded-sm"
                   onClick={() => window.open(project.githubUrl, "_blank")}
                 >
                   <Github className="w-3.5 h-3.5 mr-2" /> CODE

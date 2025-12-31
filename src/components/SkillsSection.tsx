@@ -9,10 +9,7 @@ import {
 
 export function SkillsSection() {
   
-  // Helper to get SimpleIcons URL
   const simpleIcon = (slug: string) => `https://cdn.simpleicons.org/${slug}`;
-  
-  // Helper to get DevIcon URL (for colorful originals like Photoshop/CSS)
   const devIcon = (path: string) => `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${path}.svg`;
 
   const skills = [
@@ -37,7 +34,6 @@ export function SkillsSection() {
         { name: "React.js", url: simpleIcon("react") },
         { name: "Next.js", url: simpleIcon("nextdotjs") },
         { name: "HTML5", url: simpleIcon("html5") },
-        // ✅ Switched to DevIcon for guaranteed colorful CSS3
         { name: "CSS3", url: devIcon("css3/css3-original") },
         { name: "Tailwind", url: simpleIcon("tailwindcss") },
         { name: "Framer Motion", url: simpleIcon("framer") },
@@ -71,7 +67,6 @@ export function SkillsSection() {
         { name: "Cloudinary", url: simpleIcon("cloudinary") },
         { name: "Vercel", url: simpleIcon("vercel") },
         { name: "Figma", url: simpleIcon("figma") },
-        // ✅ Switched to DevIcon to fix "Adobe" blocking issues
         { name: "After Effects", url: devIcon("aftereffects/aftereffects-original") },
         { name: "Photoshop", url: devIcon("photoshop/photoshop-original") },
       ]
@@ -81,10 +76,10 @@ export function SkillsSection() {
   return (
     <section id="skills" className="py-20 relative z-10">
       <div className="mb-12 flex items-end gap-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-white">
+        <h2 className="text-3xl md:text-4xl font-bold text-hl-text">
           <span className="text-hl-cyan">./</span>Skills
         </h2>
-        <div className="h-px bg-white/10 flex-1 mb-4" />
+        <div className="h-px bg-hl-border flex-1 mb-4" />
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -104,20 +99,19 @@ export function SkillsSection() {
               <div className="flex flex-col h-full">
                 {/* Header with Icon */}
                 <div className={`flex items-center gap-3 mb-6 ${stack.color}`}>
-                  <div className="p-2 rounded-lg bg-white/5 ring-1 ring-white/10 group-hover:scale-110 transition-transform">
+                  <div className="p-2 rounded-lg bg-hl-card ring-1 ring-hl-border group-hover:scale-110 transition-transform">
                     <stack.icon className="w-6 h-6" />
                   </div>
                   <span className="font-bold text-lg tracking-wide">{stack.category}</span>
                 </div>
 
-                {/* Skill Tags with MIXED CDNs for Reliability */}
+                {/* Skill Tags */}
                 <div className="flex flex-wrap gap-2.5">
                   {stack.items.map((item) => (
                     <span 
                       key={item.name} 
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/5 text-hl-muted text-sm font-mono rounded-md hover:bg-white/10 hover:text-white hover:border-hl-cyan/30 transition-all cursor-default group/tag"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-hl-card border border-hl-border text-hl-muted text-sm font-mono rounded-md hover:bg-hl-panel hover:text-hl-text hover:border-hl-cyan/30 transition-all cursor-default group/tag"
                     >
-                      {/* Logo Image */}
                       <img 
                         src={item.url} 
                         alt={item.name} 

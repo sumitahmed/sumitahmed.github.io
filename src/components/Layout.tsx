@@ -1,4 +1,4 @@
-import { Terminal, Clock, Home, User, Code, Mail, Folder, Music, Wifi, Zap, Activity, Moon } from "lucide-react";
+import { Terminal, Clock, Home, User, Code, Mail, Folder, Wifi, Zap, Activity, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CyberBackground } from "./CyberBackground";
 import { LiveActivity } from "./LiveActivity";
@@ -27,13 +27,41 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [isCharging, setIsCharging] = useState(true);
   const [activeSection, setActiveSection] = useState("#");
   
+  // Theme State
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
+  });
+  
+  // ⚡ BLOOM STATE
+  const [isBlooming, setIsBlooming] = useState(false);
+
   const [sumitStatus, setSumitStatus] = useState<'online' | 'idle' | 'dnd' | 'offline'>('offline');
   const [ping, setPing] = useState<number | null>(null);
-  const [lastPlayed, setLastPlayed] = useState<{song: string, artist: string} | null>(null);
-  const [isListeningNow, setIsListeningNow] = useState(false);
 
   const DISCORD_ID = '608572578231091240';
 
+  // 1. Theme Toggle with BLOOM
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    // 1. Trigger Flash
+    setIsBlooming(true);
+    
+    // 2. Wait 100ms (mid-flash), then swap theme
+    setTimeout(() => {
+      setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+      
+      // 3. Fade out flash
+      setTimeout(() => {
+        setIsBlooming(false);
+      }, 300);
+    }, 100);
+  };
+
+  // 2. Ping
   useEffect(() => {
     const measurePing = async () => {
       if (!navigator.onLine) { setPing(null); return; }
@@ -51,23 +79,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return () => clearInterval(timer);
   }, []);
 
+  // 3. Discord
   useEffect(() => {
-    const cached = localStorage.getItem('last_played_song');
-    if (cached) setLastPlayed(JSON.parse(cached));
-
     const fetchSumitStatus = async () => {
       try {
         const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`);
         const json = await res.json();
         if (json.success && json.data) {
-          const data: LanyardData = json.data;
-          setSumitStatus(data.discord_status);
-          setIsListeningNow(data.listening_to_spotify);
-          if (data.spotify) {
-            const songData = { song: data.spotify.song, artist: data.spotify.artist };
-            setLastPlayed(songData);
-            localStorage.setItem('last_played_song', JSON.stringify(songData));
-          }
+          setSumitStatus(json.data.discord_status);
         }
       } catch (error) { setSumitStatus('offline'); }
     };
@@ -76,16 +95,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => { 
-    const t = setInterval(() => setTime(new Date()), 1000); 
-    return () => clearInterval(t); 
-  }, []);
-  
-  useEffect(() => { 
-    const t = setInterval(() => setUptime(p => p + 1), 1000); 
-    return () => clearInterval(t); 
-  }, []);
+  // 4. Clock & Uptime
+  useEffect(() => { const t = setInterval(() => setTime(new Date()), 1000); return () => clearInterval(t); }, []);
+  useEffect(() => { const t = setInterval(() => setUptime(p => p + 1), 1000); return () => clearInterval(t); }, []);
 
+  // 5. Scroll Spy
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["#", "#about", "#skills", "#experience", "#projects", "#contact"];
@@ -103,6 +117,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 6. Battery
   useEffect(() => {
     const updateBattery = async () => {
       try {
@@ -136,68 +151,83 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return `${h}:${m}:${s}`;
   };
 
-  const getBatteryColor = () => {
-    if (batteryLevel > 80) return "text-hl-cyan";
-    if (batteryLevel > 20) return "text-white";   
-    return "text-hl-rose";
-  };
-
   return (
-    <div className="min-h-screen bg-hl-bg text-gray-100 relative overflow-hidden selection:bg-hl-cyan/30 selection:text-white font-sans">
+    <div className="min-h-screen bg-hl-bg text-hl-text relative overflow-hidden selection:bg-hl-cyan/30 selection:text-white font-sans transition-colors duration-500">
       
+      {/* ⚡ THE BLOOM OVERLAY */}
+      <div 
+        className="fixed inset-0 z-[10000] pointer-events-none bg-hl-cyan mix-blend-overlay transition-opacity duration-300 ease-out"
+        style={{ opacity: isBlooming ? 0.6 : 0 }}
+      />
+      <div 
+        className="fixed inset-0 z-[10000] pointer-events-none bg-white mix-blend-soft-light transition-opacity duration-300 ease-out"
+        style={{ opacity: isBlooming ? 0.8 : 0 }}
+      />
+
       <div className="scanlines opacity-10 pointer-events-none" />
       <div className="noise-overlay opacity-10 pointer-events-none" />
       
       <CyberBackground />
       <MouseGlow /> 
 
-      {/* ✅ COMPACT RESPONSIVE HEADER */}
-      <header className="fixed top-0 left-0 right-0 h-9 md:h-10 bg-[#020205]/90 backdrop-blur-md border-b border-white/5 flex items-center px-2 md:px-4 z-50 text-[10px] md:text-xs font-mono select-none">
+      {/* HEADER */}
+      <header className="fixed top-0 left-0 right-0 h-9 md:h-10 bg-hl-bg/90 backdrop-blur-md border-b border-hl-border flex items-center px-2 md:px-4 z-50 text-[10px] md:text-xs font-mono select-none transition-colors duration-500">
         
-        {/* 1. Left: Identity */}
+        {/* Left: Identity */}
         <div className="flex items-center gap-2 md:gap-4 shrink-0 mr-auto">
           <a href="mailto:sksumitahmed007@gmail.com" className="flex items-center gap-2 hover:text-hl-cyan transition-colors cursor-pointer group">
-            <div className="p-1 rounded bg-white/5 group-hover:bg-hl-cyan/20 transition-colors">
-              <Terminal className="w-3 h-3 group-hover:text-hl-cyan" />
+            <div className="p-1 rounded bg-hl-border group-hover:bg-hl-cyan/20 transition-colors">
+              <Terminal className="w-3 h-3 group-hover:text-hl-cyan text-hl-muted" />
             </div>
-            {/* Hidden email on mobile to save space */}
-            <span className="hidden md:block font-bold tracking-tight text-hl-muted group-hover:text-white truncate">
+            <span className="hidden md:block font-bold tracking-tight text-hl-muted group-hover:text-hl-text truncate">
               sksumitahmed007@gmail.com
             </span>
           </a>
         </div>
 
-        {/* 2. Center: Status (Flexible width) */}
-        {/* ✅ FIXED: Uses flex-1 and overflow-hidden to fit between left/right items without overlap */}
+        {/* Center: Status */}
         <div className="flex justify-center items-center mx-2 flex-1 overflow-hidden min-w-0">
           {sumitStatus !== 'offline' ? (
             <LiveActivity /> 
           ) : (
-            <div className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-hl-muted flex items-center gap-1.5 whitespace-nowrap">
+            <div className="px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted flex items-center gap-1.5 whitespace-nowrap">
                <Moon className="w-3 h-3" />
-               <span className="hidden sm:inline">System Offline</span>
+               <span className="hidden sm:inline">Sumit is Offline</span>
             </div>
           )}
         </div>
 
-        {/* 3. Right: Modules (Compact) */}
+        {/* Right: Modules */}
         <div className="flex items-center gap-1.5 md:gap-3 shrink-0 ml-auto">
           
-          <div className="hidden lg:flex items-center gap-2 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-hl-muted hover:text-white transition-colors cursor-default" title="Latency">
+          {/* THEME TOGGLE BUTTON */}
+          <button 
+            onClick={toggleTheme}
+            className="hidden lg:flex items-center gap-2 px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted hover:text-hl-cyan hover:border-hl-cyan/30 transition-all cursor-pointer"
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+          >
+            {theme === 'dark' ? <Moon className="w-3 h-3" /> : <Sun className="w-3 h-3" />}
+          </button>
+
+          {/* Ping */}
+          <div className="hidden lg:flex items-center gap-2 px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted hover:text-hl-text transition-colors cursor-default" title="Latency">
             <Activity className={`w-3 h-3 ${ping && ping < 100 ? 'text-hl-cyan' : 'text-hl-rose'}`} />
             <span className="tabular-nums">{ping !== null ? `${ping}ms` : '--'}</span>
           </div>
 
-          <div className="hidden lg:flex items-center gap-2 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-hl-muted hover:text-white transition-colors cursor-default" title="Uptime">
+          {/* Uptime */}
+          <div className="hidden lg:flex items-center gap-2 px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted hover:text-hl-text transition-colors cursor-default" title="Uptime">
             <Wifi className="w-3 h-3 text-hl-muted" />
             <span className="tabular-nums">{formatUptime(uptime)}</span>
           </div>
 
-          <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 transition-colors cursor-default ${getBatteryColor()}`} title={`Battery: ${batteryLevel}%`}>
+          {/* Battery */}
+          <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border transition-colors cursor-default ${batteryLevel > 80 ? 'text-hl-cyan' : 'text-hl-text'}`} title={`Battery: ${batteryLevel}%`}>
             <Zap className={`w-3 h-3 ${isCharging ? 'fill-current' : ''}`} />
             <span className="tabular-nums">{batteryLevel}%</span>
           </div>
           
+          {/* Clock */}
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-hl-cyan/10 border border-hl-cyan/20 text-hl-cyan cursor-default">
             <Clock className="w-3 h-3" />
             <span className="tabular-nums font-bold">
@@ -212,9 +242,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {navItems.map((item) => {
           const isActive = activeSection === item.path;
           return (
-            <a key={item.label} href={item.path} className={`group relative p-2 rounded-lg transition-all duration-300 hover:bg-white/5 ${isActive ? 'bg-white/5' : ''}`}>
+            <a key={item.label} href={item.path} className={`group relative p-2 rounded-lg transition-all duration-300 hover:bg-hl-panel ${isActive ? 'bg-hl-panel' : ''}`}>
               <item.icon className={`w-4 h-4 md:w-5 md:h-5 transition-colors ${isActive ? 'text-hl-cyan drop-shadow-[0_0_8px_rgba(165,180,252,0.6)]' : 'text-hl-muted group-hover:text-hl-cyan'}`} />
-              <span className="absolute left-full ml-4 px-2 py-1 bg-hl-panel border border-white/10 rounded-sm text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none text-hl-cyan shadow-xl">
+              <span className="absolute left-full ml-4 px-2 py-1 bg-hl-panel border border-hl-border rounded-sm text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none text-hl-cyan shadow-xl">
                 {item.label}
               </span>
             </a>
@@ -225,7 +255,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <main className="pt-14 px-4 md:px-8 max-w-7xl mx-auto relative z-10">{children}</main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-hl-panel/90 backdrop-blur-xl border border-white/10 rounded-full px-5 py-2.5 flex items-center gap-5 z-50 shadow-2xl xl:hidden">
+      <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-hl-panel/90 backdrop-blur-xl border border-hl-border rounded-full px-5 py-2.5 flex items-center gap-5 z-50 shadow-2xl xl:hidden">
         {navItems.map((item) => (
           <a key={item.label} href={item.path} className={`p-1.5 rounded-lg transition-all ${activeSection === item.path ? 'text-hl-cyan scale-110 drop-shadow-[0_0_8px_rgba(165,180,252,0.6)]' : 'text-hl-muted hover:text-hl-cyan'}`}>
             <item.icon className="w-4 h-4" />

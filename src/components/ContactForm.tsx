@@ -29,10 +29,10 @@ export function ContactForm() {
         <div className="flex flex-col items-center justify-center py-10 text-center space-y-4 px-6">
           <CheckCircle2 className="w-12 h-12 text-green-400" />
           <div className="space-y-1">
-            <h3 className="text-xl font-bold text-white">Message Received</h3>
+            <h3 className="text-xl font-bold text-hl-text">Message Received</h3>
             <p className="text-hl-muted text-sm">I'll get back to you shortly.</p>
           </div>
-          <Button variant="outline" onClick={() => setStatus("idle")} className="mt-2 border-white/10 hover:bg-white/5 hover:text-white">
+          <Button variant="outline" onClick={() => setStatus("idle")} className="mt-2 border-hl-border hover:bg-hl-card hover:text-hl-text text-hl-muted">
             Send Another
           </Button>
         </div>
@@ -43,30 +43,29 @@ export function ContactForm() {
   return (
     <TerminalWidget title="compose_mail.sh" className="max-w-xl mx-auto">
       <form className="space-y-5" onSubmit={handleSubmit}>
-        {/* ✅ FIXED: Stack columns on mobile (grid-cols-1), side-by-side on desktop (md:grid-cols-2) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-xs font-mono text-hl-cyan">
+            <label className="flex items-center gap-2 text-xs font-mono text-hl-cyan font-bold">
               <User className="w-3 h-3" /> NAME
             </label>
-            <Input name="name" placeholder="John Doe" required className="bg-black/20 border-white/10 focus:border-hl-cyan/50 font-mono" />
+            <Input name="name" placeholder="John Doe" required className="bg-hl-card border-hl-border focus:border-hl-cyan font-mono text-hl-text placeholder:text-hl-muted/50" />
           </div>
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-xs font-mono text-hl-cyan">
+            <label className="flex items-center gap-2 text-xs font-mono text-hl-cyan font-bold">
               <Mail className="w-3 h-3" /> EMAIL
             </label>
-            <Input type="email" name="email" placeholder="john@example.com" required className="bg-black/20 border-white/10 focus:border-hl-cyan/50 font-mono" />
+            <Input type="email" name="email" placeholder="john@example.com" required className="bg-hl-card border-hl-border focus:border-hl-cyan font-mono text-hl-text placeholder:text-hl-muted/50" />
           </div>
         </div>
         
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-xs font-mono text-hl-cyan">
+          <label className="flex items-center gap-2 text-xs font-mono text-hl-cyan font-bold">
             <MessageSquare className="w-3 h-3" /> MESSAGE
           </label>
-          <Textarea name="message" placeholder="I have a project idea..." required className="min-h-[150px] bg-black/20 border-white/10 focus:border-hl-cyan/50 font-mono resize-none" />
+          <Textarea name="message" placeholder="I have a project idea..." required className="min-h-[150px] bg-hl-card border-hl-border focus:border-hl-cyan font-mono resize-none text-hl-text placeholder:text-hl-muted/50" />
         </div>
 
-        <Button type="submit" disabled={status === "submitting"} className="w-full bg-hl-cyan hover:bg-hl-cyan/80 text-hl-bg font-bold h-11">
+        <Button type="submit" disabled={status === "submitting"} className="w-full bg-hl-cyan hover:bg-hl-cyan/80 text-hl-bg font-bold h-11 transition-all">
           {status === "submitting" ? "Sending..." : <><Send className="w-4 h-4 mr-2" /> Send Transmission</>}
         </Button>
       </form>
