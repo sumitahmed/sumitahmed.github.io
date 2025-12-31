@@ -12,41 +12,42 @@ import { MapPin, Mail, Github, Linkedin, Twitter, Instagram, Youtube, Users } fr
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  // Start with a fallback number so it doesn't look empty while loading
-  const [visitorCount, setVisitorCount] = useState(355);
+  // Start with null so we can show "..." while loading
+  const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
-  // ⚡ GLOBAL VISITOR COUNTER LOGIC (FIXED)
   useEffect(() => {
     const updateCount = async () => {
-      const namespace = "sumitahmed.github.io";
-      const key = "visits";
-      const timestamp = new Date().getTime(); // 👈 Cache Buster
+      const WORKER_URL = "https://visitor-counter.sksumitahmed007.workers.dev/";
+      const CACHE_KEY = "portfolio_visitor_count";
+      const SESSION_KEY = "portfolio_session_counted";
+
+      // Only count once per session
+      if (sessionStorage.getItem(SESSION_KEY)) {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          setVisitorCount(parseInt(cached, 10));
+          return;
+        }
+      }
 
       try {
-        // 1. Try to INCREMENT with Anti-Cache Timestamp
-        const response = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up?t=${timestamp}`, {
-          cache: "no-store", 
-          headers: { "Content-Type": "application/json" }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setVisitorCount(data.count);
-        } else {
-          // 2. If blocked (Rate Limit/Same IP), just READ the value (also with timestamp)
-          console.warn("Counter increment blocked (Rate Limit), fetching current count...");
-          const getRes = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}?t=${timestamp}`, {
-            cache: "no-store"
-          });
-          
-          if (getRes.ok) {
-            const data = await getRes.json();
+        const res = await fetch(WORKER_URL);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.count) {
             setVisitorCount(data.count);
+            localStorage.setItem(CACHE_KEY, data.count.toString());
+            sessionStorage.setItem(SESSION_KEY, "true");
+            return;
           }
         }
-      } catch (error) {
-        console.error("Counter Error:", error);
+      } catch {
+        // Worker failed - use cached
       }
+
+      // Fallback to cached value
+      const cached = localStorage.getItem(CACHE_KEY);
+      setVisitorCount(cached ? parseInt(cached, 10) : 500);
     };
 
     updateCount();
@@ -135,7 +136,11 @@ export default function Home() {
             {/* ✅ FIXED GLOBAL COUNTER */}
             <div className="flex items-center gap-2 text-xs font-mono text-gray-500 mt-4 px-4 py-2">
               <Users className="w-3 h-3 text-hl-cyan" />
-              <span>VISITORS <span className="text-hl-cyan font-bold tracking-widest">#{visitorCount.toLocaleString()}</span></span>
+              <span>
+                VISITORS <span className="text-hl-cyan font-bold tracking-widest">
+                  {visitorCount !== null ? `#${visitorCount.toLocaleString()}` : "Loading..."}
+                </span>
+              </span>
             </div>
 
             <div className="text-center"><p className="text-xs text-hl-muted/50 font-mono">© 2025 Sumit Ahmed. All rights reserved.</p></div>
