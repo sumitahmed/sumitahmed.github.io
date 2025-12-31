@@ -12,15 +12,31 @@ import { MapPin, Mail, Github, Linkedin, Twitter, Instagram, Youtube, Users } fr
 import { useEffect, useState } from "react";
 
 export default function Home() {
+  // Start with a fallback number so it doesn't look empty while loading
   const [visitorCount, setVisitorCount] = useState(355);
 
-  // ⚡ VISITOR COUNTER LOGIC
+  // ⚡ GLOBAL VISITOR COUNTER LOGIC
   useEffect(() => {
-    const storedCount = localStorage.getItem("cyber_visitor_count");
-    let count = storedCount ? parseInt(storedCount, 10) : 355;
-    count += 1;
-    localStorage.setItem("cyber_visitor_count", count.toString());
-    setVisitorCount(count);
+    const updateCount = async () => {
+      try {
+        // 1. We use 'sumitahmed.github.io' as the unique namespace
+        // 2. We use 'visits' as the counter key
+        // 3. The '/up' endpoint adds +1 and returns the new total
+        const response = await fetch("https://api.counterapi.dev/v1/sumitahmed.github.io/visits/up");
+        
+        if (response.ok) {
+          const data = await response.json();
+          // The API returns: { "count": 123 }
+          setVisitorCount(data.count);
+        } else {
+          console.warn("Counter API error, using fallback.");
+        }
+      } catch (error) {
+        console.error("Counter Error:", error);
+      }
+    };
+
+    updateCount();
   }, []);
 
   const scrollToContact = (e: React.MouseEvent) => {
@@ -31,7 +47,6 @@ export default function Home() {
     }
   };
 
-  // ✅ FIXED: Completely Transparent Social Links (No Box)
   const SocialLink = ({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) => (
     <a 
       href={href} 
@@ -78,7 +93,6 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* ✅ FIXED: Transparent Footer (No Background Color, No Border) */}
       <footer className="py-12 pb-32 xl:pb-12 relative z-30 bg-transparent border-t border-transparent">
         <div className="container mx-auto px-4 flex flex-col items-center gap-8">
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 w-full max-w-4xl">
@@ -105,7 +119,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ✅ FIXED: Transparent Visitor Counter (No Box) */}
+            {/* ✅ FIXED GLOBAL COUNTER */}
             <div className="flex items-center gap-2 text-xs font-mono text-gray-500 mt-4 px-4 py-2">
               <Users className="w-3 h-3 text-hl-cyan" />
               <span>VISITORS <span className="text-hl-cyan font-bold tracking-widest">#{visitorCount.toLocaleString()}</span></span>
