@@ -20,7 +20,14 @@ export function MouseGlow() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   // --- PHYSICS STATE ---
-  const mouse = useRef({ x: -100, y: -100, prevX: -100, prevY: -100 });
+  // Start in center of screen to avoid corner glitching
+  const mouse = useRef({ 
+    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0, 
+    y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0, 
+    prevX: 0, 
+    prevY: 0 
+  });
+  
   const dagger = useRef({ angle: Math.PI / 2, angularVel: 0 }); 
   
   const chain1 = useRef(
@@ -49,20 +56,32 @@ export function MouseGlow() {
   }, []);
 
   useEffect(() => {
-    // 2. INPUT TRACKING
+    // 2. INPUT TRACKING (MOUSE & TOUCH)
     const handleMouseMove = (e: MouseEvent) => {
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
+    };
+
+    // 📱 MOBILE FIX: Touch Listeners
+    const handleTouchMove = (e: TouchEvent) => {
+      // Prevent scrolling if you want full dagger control, or remove preventDefault to allow scroll
+      // e.preventDefault(); 
+      const touch = e.touches[0];
+      mouse.current.x = touch.clientX;
+      mouse.current.y = touch.clientY;
     };
 
     const handleRightClick = (e: MouseEvent) => {
       e.preventDefault();
       setIsCharged(true);
       setTimeout(() => setIsCharged(false), 400); 
-      dagger.current.angularVel += 0.8; // Spin impulse
+      dagger.current.angularVel += 0.8; 
     };
 
+    // Add both Mouse and Touch listeners
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchstart", handleTouchMove, { passive: true });
     window.addEventListener("contextmenu", handleRightClick);
 
     // 3. PHYSICS LOOP
@@ -94,6 +113,7 @@ export function MouseGlow() {
       requestAnimationFrame(loop);
     };
 
+    // Physics Helpers
     const updateChain = (links: any[], count: number, size: number, drag: number, anchorX: number, anchorY: number) => {
       links[0].x = anchorX;
       links[0].y = anchorY;
@@ -127,6 +147,8 @@ export function MouseGlow() {
     const animId = requestAnimationFrame(loop);
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchMove);
       window.removeEventListener("contextmenu", handleRightClick);
       cancelAnimationFrame(animId);
     };
@@ -147,10 +169,8 @@ export function MouseGlow() {
       const midY = (p1.y + p2.y) / 2;
       const isEven = i % 2 === 0;
 
-      // Dark Mode: Silver body with Dark Grey outline for contrast
-      // Light Mode: Gunmetal body with Dark Slate outline
       const fill = theme === 'light' ? "url(#obsidian-link-grad)" : "url(#silver-link-grad)";
-      const stroke = theme === 'light' ? "#334155" : "#475569"; // ✅ CHANGED: Dark grey in dark mode too
+      const stroke = theme === 'light' ? "#334155" : "#475569";
 
       elements.push(
         <rect
@@ -171,7 +191,9 @@ export function MouseGlow() {
   };
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden">
+    // ✅ FIXED: Changed Z-Index from 9999 to 40
+    // This puts the dagger BEHIND the header (z-50) so buttons work.
+    <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
       <svg
         ref={svgRef}
         width="100%"
@@ -180,8 +202,6 @@ export function MouseGlow() {
       >
         <defs>
           {/* --- METALLIC GRADIENTS --- */}
-          
-          {/* DARK MODE: Platinum/Silver */}
           <linearGradient id="silver-link-grad" x1="0%" y1="0%" x2="0%" y2="100%">
              <stop offset="0%" stopColor="#e2e8f0" />    
              <stop offset="50%" stopColor="#ffffff" />    
@@ -193,7 +213,6 @@ export function MouseGlow() {
              <stop offset="100%" stopColor="#94a3b8" />  
           </linearGradient>
 
-          {/* LIGHT MODE: Obsidian/Gunmetal */}
           <linearGradient id="obsidian-link-grad" x1="0%" y1="0%" x2="0%" y2="100%">
              <stop offset="0%" stopColor="#475569" />
              <stop offset="50%" stopColor="#1e293b" />
@@ -205,14 +224,11 @@ export function MouseGlow() {
              <stop offset="100%" stopColor="#0f172a" />  
           </linearGradient>
 
-          {/* --- SHINY FILTERS --- */}
-          
-          {/* 1. Basic Metallic Shine */}
+          {/* --- FILTERS --- */}
           <filter id="metal-shine" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="0.8" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
-
         </defs>
 
         <g transform="scale(0.9)"> 
@@ -231,7 +247,7 @@ export function MouseGlow() {
                 <g filter="url(#metal-shine)">
                   {/* Hilt Ring */}
                   <circle cx="0" cy="0" r="5" 
-                    stroke={theme === 'light' ? "#1e293b" : "#475569"} // ✅ FIXED: Dark grey ring in dark mode
+                    stroke={theme === 'light' ? "#1e293b" : "#475569"} 
                     strokeWidth="2.5" fill="transparent" 
                   />
                   
@@ -247,7 +263,6 @@ export function MouseGlow() {
                   />
                   
                   {/* Blade Edge Outline */}
-                  {/* ✅ FIXED: Used Dark Slate (#475569) in dark mode so it shows on the silver body */}
                   <path 
                       d="M -6 18 L -7 25 L 0 85 L 7 25 L 6 18 Z" 
                       fill="none" 
@@ -256,7 +271,6 @@ export function MouseGlow() {
                   />
                   
                   {/* Tech Lines */}
-                  {/* ✅ FIXED: Used Dark Slate (#475569) here too */}
                   <path 
                       d="M 0 22 L 0 65" 
                       stroke={theme === 'light' ? "#334155" : "#475569"} 
@@ -278,7 +292,6 @@ export function MouseGlow() {
                       strokeLinecap="round"
                       opacity={isCharged ? "1" : "0.8"}
                       className={isCharged ? "animate-pulse" : ""}
-                      // Sharp glow
                       filter={theme === 'light' ? "drop-shadow(0 0 5px #38bdf8)" : "drop-shadow(0 0 5px white)"}
                   />
               </g>

@@ -166,7 +166,7 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="text-center"><p className="text-xs text-hl-muted/50 font-mono">© 2025 Sumit Ahmed. All rights reserved.</p></div>
+            <div className="text-center"><p className="text-xs text-hl-muted/50 font-mono">© 2026 Sumit Ahmed. All rights reserved.</p></div>
         </div>
       </footer>
     </Layout>

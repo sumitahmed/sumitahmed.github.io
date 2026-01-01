@@ -16,6 +16,7 @@ interface GitHubData {
 export function CodingStats() {
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
   const USE_LEETCODE = false;
   const githubUsername = "sumitahmed";
@@ -35,7 +36,6 @@ export function CodingStats() {
     link: `https://codolio.com/profile/${codolioUsername}`,
   };
 
-  // LeetCode Data
   const leetcodeData = {
     total: 15,
     activeDays: 0,
@@ -50,10 +50,9 @@ export function CodingStats() {
 
   const stats = USE_LEETCODE ? leetcodeData : codolioData;
 
-  // GitHub Colors (Keeping standard green but can be customized)
   const getContributionColor = (level: number) => {
     switch (level) {
-      case 0: return 'var(--bg-card)'; // Empty squares adapt to theme
+      case 0: return 'var(--bg-card)';
       case 1: return '#0e4429'; 
       case 2: return '#006d32'; 
       case 3: return '#26a641'; 
@@ -64,26 +63,44 @@ export function CodingStats() {
 
   useEffect(() => {
     async function fetchContributions() {
+      setLoading(true);
       try {
-        const response = await fetch(`https://github-contributions-api.jogruber.de/v4/${githubUsername}?y=last`);
+        // Fetch data for specific year
+        const response = await fetch(`https://github-contributions-api.jogruber.de/v4/${githubUsername}?y=${selectedYear}`);
         const data = await response.json();
+        
         if (!data?.contributions) throw new Error("No data");
 
         const flatDays: ContributionDay[] = data.contributions;
         const processedWeeks: ContributionDay[][] = [];
         let currentWeek: ContributionDay[] = [];
 
+        // Align start to Sunday
+        // (If the first day isn't Sunday, fill with empty days for alignment)
+        const firstDayDate = new Date(flatDays[0].date);
+        const emptyDaysStart = firstDayDate.getDay(); 
+        for(let i=0; i<emptyDaysStart; i++) {
+            currentWeek.push({ date: "", count: 0, level: 0 });
+        }
+
         flatDays.forEach((day) => {
-          const date = new Date(day.date);
-          if (date.getDay() === 0 && currentWeek.length > 0) {
+          if (currentWeek.length === 7) {
             processedWeeks.push(currentWeek);
             currentWeek = [];
           }
           currentWeek.push(day);
         });
+        
+        // Fill remaining days of the last week
+        while (currentWeek.length < 7 && currentWeek.length > 0) {
+            currentWeek.push({ date: "", count: 0, level: 0 });
+        }
         if (currentWeek.length > 0) processedWeeks.push(currentWeek);
 
-        const recentWeeks = processedWeeks.slice(-53); 
+        // GitHub usually shows the last 52/53 weeks
+        const recentWeeks = processedWeeks; 
+        
+        // Calculate total for the selected year
         const total = flatDays.reduce((acc, day) => acc + day.count, 0);
 
         setGithubData({ total, weeks: recentWeeks });
@@ -94,35 +111,62 @@ export function CodingStats() {
       }
     }
     fetchContributions();
-  }, [githubUsername]);
+  }, [githubUsername, selectedYear]);
 
+  // ✅ FIXED: Official GitHub Month Positioning
   const renderMonthLabels = () => {
     if (!githubData?.weeks) return null;
     const months: { name: string; index: number }[] = [];
-    let lastMonth = -1;
+    
+    // Scan weeks to find where each month starts
+    githubData.weeks.forEach((week, weekIndex) => {
+        // Check the first valid day of the week
+        const firstDayObj = week.find(d => d.date !== "");
+        if (!firstDayObj) return;
+        
+        const date = new Date(firstDayObj.date);
+        const month = date.getMonth();
+        
+        // Check if this week contains the 1st or near 1st of a month
+        // Or simply check if month changed from previous week's logic
+        // GitHub logic: Place label on the column where the month predominantly starts
+        const prevWeek = githubData.weeks[weekIndex - 1];
+        let prevMonth = -1;
+        if (prevWeek) {
+            const prevDay = prevWeek.find(d => d.date !== "");
+            if (prevDay) prevMonth = new Date(prevDay.date).getMonth();
+        }
 
-    githubData.weeks.forEach((week, index) => {
-      const firstDay = week[0];
-      if (!firstDay) return;
-      const date = new Date(firstDay.date);
-      const month = date.getMonth();
-      
-      if (month !== lastMonth) {
-        months.push({ 
-          name: date.toLocaleString('default', { month: 'short' }), 
-          index 
-        });
-        lastMonth = month;
-      }
+        // If month changed, add label
+        if (month !== prevMonth && prevMonth !== -1) {
+             months.push({ 
+                name: date.toLocaleString('default', { month: 'short' }), 
+                index: weekIndex 
+            });
+        }
+        // Handle first month explicitly
+        if (weekIndex === 0) {
+             months.push({ 
+                name: date.toLocaleString('default', { month: 'short' }), 
+                index: weekIndex 
+            });
+        }
     });
+
+    // Remove duplicates if any (e.g. Jan showing twice if data starts mid-Jan)
+    const uniqueMonths = months.filter((m, index, self) => 
+        index === self.findIndex((t) => (
+            t.name === m.name
+        ))
+    );
 
     return (
       <div className="flex text-[10px] text-hl-muted mb-2 relative h-4 w-full">
-        {months.map((m, i) => (
+        {uniqueMonths.map((m, i) => (
           <span 
             key={i} 
             className="absolute" 
-            style={{ left: `${m.index * 14}px` }} 
+            style={{ left: `${m.index * 13}px` }} // 10px width + 3px gap = ~13px stride
           >
             {m.name}
           </span>
@@ -130,6 +174,8 @@ export function CodingStats() {
       </div>
     );
   };
+
+  const years = [2026, 2025, 2024, 2023, 2022]; // Add more if needed
 
   if (loading) {
     return (
@@ -143,81 +189,100 @@ export function CodingStats() {
     <div className="flex flex-col gap-4 md:gap-6 font-mono text-sm md:text-base w-full">
       
       {/* 1. GitHub Activity Card */}
-      <a 
-        href={`https://github.com/${githubUsername}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block group w-full"
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="w-full space-y-3 md:space-y-4 rounded-xl border border-hl-border bg-hl-panel p-4 md:p-6"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="w-full space-y-3 md:space-y-4 rounded-xl border border-hl-border bg-hl-panel p-4 md:p-6 transition-all hover:border-green-500/50 hover:shadow-xl hover:shadow-green-500/10"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-hl-border pb-2 md:pb-3">
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between border-b border-hl-border pb-2 md:pb-3 gap-2">
             <div className="flex items-center gap-2 md:gap-3">
-              <div className="p-1.5 md:p-2 rounded-lg bg-green-500/10 text-green-500">
-                <GitBranch className="h-4 w-4 md:h-5 md:w-5" />
-              </div>
-              <span className="text-hl-text group-hover:text-green-400 transition-colors font-bold text-sm md:text-base tracking-wide">
-                GitHub Activity
-              </span>
-            </div>
-            <div className="text-right">
-              <span className="text-lg md:text-xl font-bold text-hl-text">{githubData?.total}</span>
-              <span className="text-[10px] md:text-xs text-hl-muted ml-2">Contributions</span>
-            </div>
-          </div>
-
-          {/* Graph Container */}
-          <div className="rounded-lg border border-hl-border bg-hl-bg p-3 md:p-4 opacity-90 group-hover:opacity-100 transition-opacity w-full overflow-hidden">
-            <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-hl-border scrollbar-track-transparent">
-              <div className="flex flex-col min-w-max"> 
-                <div className="pl-8 w-full">
-                  {renderMonthLabels()}
+                <div className="p-1.5 md:p-2 rounded-lg bg-green-500/10 text-green-500">
+                    <GitBranch className="h-4 w-4 md:h-5 md:w-5" />
                 </div>
+                <span className="text-hl-text font-bold text-sm md:text-base tracking-wide">
+                    {githubData?.total} contributions in {selectedYear}
+                </span>
+            </div>
+            
+            {/* Year Selector */}
+            <div className="flex gap-1">
+                {years.map(year => (
+                    <button
+                        key={year}
+                        onClick={() => setSelectedYear(year)}
+                        className={`px-2 py-1 text-[10px] md:text-xs rounded transition-colors ${
+                            selectedYear === year 
+                            ? "bg-hl-cyan text-hl-bg font-bold" 
+                            : "text-hl-muted hover:bg-hl-card hover:text-hl-text"
+                        }`}
+                    >
+                        {year}
+                    </button>
+                ))}
+            </div>
+        </div>
 
-                <div className="flex gap-2">
-                  <div className="flex flex-col justify-between text-[9px] text-hl-muted pt-2 pb-1 h-[88px]">
-                    <span>Mon</span>
-                    <span>Wed</span>
-                    <span>Fri</span>
-                  </div>
-                  
-                  <div className="flex gap-[3px]">
-                    {githubData?.weeks.map((week, weekIndex) => (
-                      <div key={weekIndex} className="flex flex-col gap-[3px]">
-                        {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-                          const day = week.find(d => new Date(d.date).getDay() === dayIndex);
-                          return (
-                            // ✅ FIXED: Removed 'border border-hl-border/20' to kill the white boxes
+        {/* Graph Container */}
+        <div className="rounded-lg border border-hl-border bg-hl-bg p-3 md:p-4 opacity-90 w-full overflow-hidden">
+          <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-hl-border scrollbar-track-transparent">
+            <div className="flex flex-col min-w-max"> 
+              {/* Month Labels */}
+              <div className="pl-8 w-full">
+                {renderMonthLabels()}
+              </div>
+
+              <div className="flex gap-2">
+                {/* Day Labels */}
+                <div className="flex flex-col justify-between text-[9px] text-hl-muted pt-2 pb-1 h-[88px]">
+                  <span>Mon</span>
+                  <span>Wed</span>
+                  <span>Fri</span>
+                </div>
+                
+                {/* The Grid */}
+                <div className="flex gap-[3px]">
+                  {githubData?.weeks.map((week, weekIndex) => (
+                    <div key={weekIndex} className="flex flex-col gap-[3px]">
+                      {week.map((day, dayIndex) => (
+                         // If date is empty string, render invisible spacer
+                        day.date === "" ? (
+                             <div key={dayIndex} className="w-[10px] h-[10px]" />
+                        ) : (
                             <div
                               key={dayIndex}
-                              className="w-[11px] h-[11px] rounded-[2px]"
+                              className="w-[10px] h-[10px] rounded-[2px]"
                               style={{
-                                backgroundColor: day ? getContributionColor(day.level) : 'var(--bg-card)'
+                                backgroundColor: getContributionColor(day.level)
                               }}
-                              title={day ? `${day.count} contributions on ${day.date}` : 'No contributions'}
+                              title={`${day.count} contributions on ${day.date}`}
                             />
-                          );
-                        })}
-                      </div>
-                    ))}
-                  </div>
+                        )
+                      ))}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="flex items-center justify-end text-[10px] md:text-xs text-hl-muted pt-1">
-            <span className="flex items-center gap-2 group-hover:text-hl-text transition-colors">
-              View Profile <ExternalLink className="w-3 h-3" />
-            </span>
+          
+          <div className="flex items-center justify-between text-[10px] md:text-xs text-hl-muted pt-2 mt-2 border-t border-hl-border/50">
+             <a href={`https://github.com/${githubUsername}`} target="_blank" rel="noopener noreferrer" className="hover:text-hl-cyan transition-colors">
+                Learn how we count contributions
+             </a>
+             <div className="flex items-center gap-1">
+                <span>Less</span>
+                <div className="w-[10px] h-[10px] rounded-[2px]" style={{ background: 'var(--bg-card)' }} />
+                <div className="w-[10px] h-[10px] rounded-[2px]" style={{ background: '#0e4429' }} />
+                <div className="w-[10px] h-[10px] rounded-[2px]" style={{ background: '#006d32' }} />
+                <div className="w-[10px] h-[10px] rounded-[2px]" style={{ background: '#26a641' }} />
+                <div className="w-[10px] h-[10px] rounded-[2px]" style={{ background: '#39d353' }} />
+                <span>More</span>
+             </div>
           </div>
-        </motion.div>
-      </a>
+        </div>
+      </motion.div>
 
       {/* 2. Coding Stats Card */}
       <a 
