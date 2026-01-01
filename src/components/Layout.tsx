@@ -200,10 +200,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {/* Right: Modules */}
         <div className="flex items-center gap-1.5 md:gap-3 shrink-0 ml-auto">
           
-          {/* THEME TOGGLE BUTTON */}
+          {/* ✅ FIXED: BUTTON IS NOW VISIBLE ON MOBILE (Removed 'hidden lg:flex') */}
           <button 
             onClick={toggleTheme}
-            className="hidden lg:flex items-center gap-2 px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted hover:text-hl-cyan hover:border-hl-cyan/30 transition-all cursor-pointer"
+            className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted hover:text-hl-cyan hover:border-hl-cyan/30 transition-all cursor-pointer"
             title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
           >
             {theme === 'dark' ? <Moon className="w-3 h-3" /> : <Sun className="w-3 h-3" />}
