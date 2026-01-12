@@ -24,8 +24,13 @@ export function CodingStats() {
   const codolioUsername = "SumitKun";
   const leetcodeUsername = "sumitahmed";
 
+  // ✅ UPDATED: Stats from your latest Codolio screenshot
   const codolioData = {
-    total: 144, activeDays: 33, easy: 66, medium: 9, hard: 1,
+    total: 173,      // Was 144
+    activeDays: 52,  // Was 33
+    easy: 85,        // Was 66
+    medium: 17,      // Was 9
+    hard: 2,         // Was 1
     label: "Codolio", color: "text-hl-rose", barColor: "bg-hl-rose",
     link: `https://codolio.com/profile/${codolioUsername}`,
   };
@@ -56,7 +61,6 @@ export function CodingStats() {
         const response = await fetch(`https://github-contributions-api.jogruber.de/v4/${githubUsername}?y=${selectedYear}`);
         const data = await response.json();
         
-        // 1. Create a Map of the API data for fast lookup
         const contributionMap = new Map<string, { count: number, level: number }>();
         if (data?.contributions) {
             data.contributions.forEach((d: any) => {
@@ -64,21 +68,17 @@ export function CodingStats() {
             });
         }
 
-        // 2. Generate a FULL YEAR calendar (Jan 1 - Dec 31)
         const weeks: ContributionDay[][] = [];
         let currentWeek: ContributionDay[] = [];
         
-        // Start from Jan 1st of selected year
         const startDate = new Date(selectedYear, 0, 1);
         const endDate = new Date(selectedYear, 11, 31);
 
-        // Align start to Sunday (pad with empty days if Jan 1 is not Sunday)
         const startDayOfWeek = startDate.getDay(); 
         for (let i = 0; i < startDayOfWeek; i++) {
             currentWeek.push({ date: "", count: 0, level: 0 });
         }
 
-        // Loop through every day of the year
         for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
             const dateStr = d.toISOString().split('T')[0];
             const contribution = contributionMap.get(dateStr) || { count: 0, level: 0 };
@@ -95,7 +95,6 @@ export function CodingStats() {
             }
         }
 
-        // Push last week if incomplete
         if (currentWeek.length > 0) {
             while (currentWeek.length < 7) {
                 currentWeek.push({ date: "", count: 0, level: 0 });
@@ -117,7 +116,6 @@ export function CodingStats() {
     fetchContributions();
   }, [githubUsername, selectedYear]);
 
-  // Labels based on the generated weeks
   const renderMonthLabels = () => {
     if (!githubData?.weeks) return null;
     const months: { name: string; index: number }[] = [];
@@ -129,7 +127,6 @@ export function CodingStats() {
         const date = new Date(firstValidDay.date);
         const month = date.toLocaleString('default', { month: 'short' });
         
-        // Only add label if it's the first time we see this month
         if (!months.some(m => m.name === month)) {
             months.push({ name: month, index: weekIndex });
         }
@@ -196,16 +193,11 @@ export function CodingStats() {
             </div>
         </div>
 
-        {/* ✅ SMOOTH SCROLL CONTAINER 
-           - 'overflow-x-auto': Enables native swipe scroll
-           - 'scrollbar-none': Hides ugly bars (requires tailwind plugin or css)
-           - Mask Image: Fades the right edge to hint at more content
-        */}
+        {/* ✅ SMOOTH SCROLL CONTAINER */}
         <div className="relative group">
             <div 
                 ref={scrollRef}
                 className="overflow-x-auto pb-4 scroll-smooth w-full"
-                // Adding a subtle mask to show scrolling is possible
                 style={{ maskImage: 'linear-gradient(to right, black 90%, transparent 100%)' }}
             >
                 <div className="flex flex-col min-w-max pr-8"> 
@@ -244,7 +236,6 @@ export function CodingStats() {
                 </div>
             </div>
             
-            {/* Scroll Hints (Optional: Show arrow if scrolled) */}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-hl-cyan opacity-0 group-hover:opacity-50 transition-opacity md:hidden">
                 <ChevronRight className="w-6 h-6 animate-pulse" />
             </div>
