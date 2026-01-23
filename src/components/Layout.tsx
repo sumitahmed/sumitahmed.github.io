@@ -1,18 +1,9 @@
-import { Terminal, Clock, Home, User, Code, Mail, Folder, Wifi, Zap, Activity, Moon, Sun } from "lucide-react";
+import { Terminal, Clock, Home, User, Code, Mail, Folder, Wifi, Zap, Activity, Moon, Sun, WifiOff, Book } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CyberBackground } from "./CyberBackground";
 import { LiveActivity } from "./LiveActivity";
 import { EngagementPopup } from "./EngagementPopup";
 import { MouseGlow } from "./MouseGlow";
-
-interface LanyardData {
-  discord_status: 'online' | 'idle' | 'dnd' | 'offline';
-  spotify?: {
-    song: string;
-    artist: string;
-  } | null;
-  listening_to_spotify: boolean;
-}
 
 declare global {
   interface Navigator {
@@ -102,7 +93,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   // 5. Scroll Spy
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["#", "#about", "#skills", "#experience", "#projects", "#contact"];
+      const sections = ["#", "#about", "#skills", "#experience", "#projects", "#resources", "#contact"];
       const scrollPosition = window.scrollY + 200;
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
@@ -141,6 +132,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { icon: Code, label: "~/skills", path: "#skills" },
     { icon: Folder, label: "~/experience", path: "#experience" },
     { icon: Folder, label: "~/projects", path: "#projects" },
+    { icon: Book, label: "~/resources", path: "#resources" }, // ✅ Added Resources
     { icon: Mail, label: "~/contact", path: "#contact" },
   ];
 
@@ -190,9 +182,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {sumitStatus !== 'offline' ? (
             <LiveActivity /> 
           ) : (
-            <div className="px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted flex items-center gap-1.5 whitespace-nowrap">
-               <Moon className="w-3 h-3" />
-               <span className="hidden sm:inline">Sumit is Offline</span>
+            // ✅ FIXED: Changed Icon to 'WifiOff' and Removed 'hidden' from text on mobile
+            <div className="px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted/60 flex items-center gap-2 whitespace-nowrap">
+               <WifiOff className="w-3 h-3" />
+               <span className="text-[9px] font-bold tracking-wider">OFFLINE</span>
             </div>
           )}
         </div>
@@ -200,7 +193,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {/* Right: Modules */}
         <div className="flex items-center gap-1.5 md:gap-3 shrink-0 ml-auto">
           
-          {/* ✅ FIXED: BUTTON IS NOW VISIBLE ON MOBILE (Removed 'hidden lg:flex') */}
+          {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}
             className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted hover:text-hl-cyan hover:border-hl-cyan/30 transition-all cursor-pointer"

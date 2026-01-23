@@ -6,6 +6,7 @@ import { Experience } from "../components/Experience";
 import { ProjectCard } from "../components/ProjectCard";
 import { ContactForm } from "../components/ContactForm";
 import { AchievementsSection } from "../components/AchievementsSection";
+import { ResourcesSection } from "../components/ResourcesSection"; // ✅ NEW IMPORT
 import { PROJECTS_DATA } from "../lib/data";
 import { motion } from "framer-motion";
 import { MapPin, Mail, Github, Linkedin, Twitter, Instagram, Youtube, Users } from "lucide-react";
@@ -63,10 +64,8 @@ export default function Home() {
       href={href} 
       target="_blank" 
       rel="noopener noreferrer" 
-      // ⚡ FIX: Uses dynamic panel color on hover instead of white/5
       className="group flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer relative z-20 hover:bg-hl-panel border border-transparent hover:border-hl-border"
     >
-      {/* ⚡ FIX: Uses dynamic text color (Dark Navy in Light Mode, White in Dark Mode) */}
       <div className="text-hl-muted group-hover:text-hl-text transition-colors">{icon}</div>
       <span className="text-[10px] text-hl-muted font-mono group-hover:text-hl-cyan uppercase tracking-wider">{label}</span>
     </a>
@@ -94,6 +93,11 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ✅ ADDED RESOURCES SECTION */}
+      <div id="resources">
+        <ResourcesSection />
+      </div>
+
       <AchievementsSection />
 
       <section id="contact" className="py-20 pb-10">
@@ -116,7 +120,6 @@ export default function Home() {
               <SocialLink href="https://www.instagram.com/incel.sumit" icon={<Instagram className="w-5 h-5" />} label="Insta" />
               <SocialLink href="https://www.youtube.com/@emm0rt4l04" icon={<Youtube className="w-5 h-5" />} label="YouTube" />
               
-              {/* ✅ FIXED: Converted LeetCode Image to SVG so it colors correctly */}
               <SocialLink 
                 href="https://leetcode.com/sumitahmed" 
                 icon={
@@ -127,7 +130,6 @@ export default function Home() {
                 label="LeetCode" 
               />
 
-              {/* ✅ FIXED: Converted GFG Image to SVG */}
               <SocialLink 
                 href="https://auth.geeksforgeeks.org/user/sumitahmed" 
                 icon={
@@ -144,9 +146,7 @@ export default function Home() {
               </a>
             </div>
 
-            {/* ✅ FIXED: Footer Borders and Text Colors */}
             <div className="flex flex-col md:flex-row items-center gap-6 text-sm font-mono text-hl-muted border-t border-hl-border pt-8 w-full max-w-4xl justify-center relative z-20">
-              {/* hover:text-hl-text makes it dark in light mode, white in dark mode */}
               <a href="#contact" onClick={scrollToContact} className="flex items-center gap-2 hover:text-hl-text hover:text-hl-cyan transition-colors cursor-pointer p-2">
                 <Mail className="w-4 h-4 text-hl-cyan" /><span>sksumitahmed007@gmail.com</span>
               </a>
@@ -156,7 +156,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Global Counter */}
             <div className="flex items-center gap-2 text-xs font-mono text-hl-muted mt-4 px-4 py-2">
               <Users className="w-3 h-3 text-hl-cyan" />
               <span>
