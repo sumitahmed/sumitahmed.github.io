@@ -10,7 +10,7 @@ Built with **React** and **TypeScript**, it leverages **Tailwind CSS** for a hig
 
 ## Live Demo
 
-**[View Live Site](https://sumitahmed.github.io)**
+**[View Live Site](https://sumitahmed.me)**
 
 ---
 
