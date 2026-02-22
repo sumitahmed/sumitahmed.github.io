@@ -2,7 +2,7 @@
   "name": "portfolio-cra",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://sumitahmed.me",
+  "homepage": "https://sumitahmed.github.io",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
