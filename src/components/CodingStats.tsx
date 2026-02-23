@@ -26,11 +26,11 @@ export function CodingStats() {
 
   // ✅ UPDATED: Stats from your latest Codolio screenshot
   const codolioData = {
-    total: 173,      // Was 144
-    activeDays: 52,  // Was 33
-    easy: 85,        // Was 66
-    medium: 17,      // Was 9
-    hard: 2,         // Was 1
+    total: 236,      // Was 173
+    activeDays: 90,  // Was 52
+    easy: 128,       // Was 85
+    medium: 33,      // Was 17
+    hard: 4,         // Was 2
     label: "Codolio", color: "text-hl-rose", barColor: "bg-hl-rose",
     link: `https://codolio.com/profile/${codolioUsername}`,
   };
@@ -42,6 +42,9 @@ export function CodingStats() {
   };
 
   const stats = USE_LEETCODE ? leetcodeData : codolioData;
+  
+  // Calculate total strictly for the progress bar so it fills 100% evenly
+  const barTotal = stats.easy + stats.medium + stats.hard;
 
   const getContributionColor = (level: number) => {
     switch (level) {
@@ -294,9 +297,10 @@ export function CodingStats() {
 
            <div className="space-y-3 pt-1">
              <div className="flex h-3 w-full overflow-hidden rounded-full bg-hl-card border border-hl-border/20">
-                <div className="bg-hl-moss" style={{ width: `${(stats.easy/stats.total)*100}%` }} />
-                <div className="bg-hl-cyan" style={{ width: `${(stats.medium/stats.total)*100}%` }} />
-                <div className={stats.barColor} style={{ width: `${(stats.hard/stats.total)*100}%` }} />
+                {/* Mathematical fix to ensure bar completely fills to 100% */}
+                <div className="bg-hl-moss" style={{ width: `${(stats.easy/barTotal)*100}%` }} />
+                <div className="bg-hl-cyan" style={{ width: `${(stats.medium/barTotal)*100}%` }} />
+                <div className={stats.barColor} style={{ width: `${(stats.hard/barTotal)*100}%` }} />
              </div>
              <div className="flex justify-between text-xs font-medium opacity-90 px-1">
                <span className="text-hl-moss">Easy: {stats.easy}</span>
