@@ -18,9 +18,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [isCharging, setIsCharging] = useState(true);
   const [activeSection, setActiveSection] = useState("#");
   
-  // Theme State
+  // Theme State - NOW DEFAULTS TO LIGHT
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    return (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
+    return (localStorage.getItem('theme') as 'dark' | 'light') || 'light';
   });
   
   // ⚡ BLOOM STATE
@@ -132,7 +132,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { icon: Code, label: "~/skills", path: "#skills" },
     { icon: Folder, label: "~/experience", path: "#experience" },
     { icon: Folder, label: "~/projects", path: "#projects" },
-    { icon: Book, label: "~/resources", path: "#resources" }, // ✅ Added Resources
+    { icon: Book, label: "~/resources", path: "#resources" },
     { icon: Mail, label: "~/contact", path: "#contact" },
   ];
 
@@ -182,7 +182,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {sumitStatus !== 'offline' ? (
             <LiveActivity /> 
           ) : (
-            // ✅ FIXED: Changed Icon to 'WifiOff' and Removed 'hidden' from text on mobile
             <div className="px-2 py-0.5 rounded-full bg-hl-panel border border-hl-border text-hl-muted/60 flex items-center gap-2 whitespace-nowrap">
                <WifiOff className="w-3 h-3" />
                <span className="text-[9px] font-bold tracking-wider">OFFLINE</span>

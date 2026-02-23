@@ -1,8 +1,12 @@
-import { motion } from "framer-motion";
-import { Book, Cpu, Monitor, Keyboard, Mouse, Laptop, Terminal, Database, Code2, Server, Cloud, Table, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Book, Cpu, Monitor, Keyboard, Mouse, Laptop, Terminal, Database, Code2, Server, Cloud, Table, ArrowRight, ChevronDown } from "lucide-react";
 
 export function ResourcesSection() {
-  
+  // ✅ State for collapsibles
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const [isGearOpen, setIsGearOpen] = useState(false);
+
   // 1. HERO RESOURCE (DSA)
   const dsaResource = {
     title: "The Ultimate DSA & CP Protocol",
@@ -46,8 +50,9 @@ export function ResourcesSection() {
   return (
     <section className="py-20 relative">
       <div className="mb-10 flex items-end gap-4">
+        {/* ✅ Updated Title */}
         <h2 className="text-3xl md:text-4xl font-bold text-hl-text">
-          <span className="text-hl-rose">./</span>Resources
+          <span className="text-hl-rose">./</span>Blogs & Resources
         </h2>
         <div className="h-px bg-hl-border flex-1 mb-4" />
       </div>
@@ -121,57 +126,98 @@ export function ResourcesSection() {
         {/* RIGHT COLUMN: STACK & GEAR */}
         <div className="space-y-6">
             
-            {/* Dev Tools */}
+            {/* Dev Tools Accordion */}
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="rounded-xl border border-hl-border bg-hl-card p-6"
+              className="rounded-xl border border-hl-border bg-hl-card overflow-hidden"
             >
-                <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-sm font-mono text-hl-muted uppercase tracking-wider flex items-center gap-2">
-                    <Terminal className="w-4 h-4" /> Tools & Stack
-                    </h4>
-                    <a href="#skills" className="text-[10px] text-hl-cyan hover:underline cursor-pointer">
-                      View Full Stack {'->'}
-                    </a>
-                </div>
-                
-                <div className="space-y-3">
-                    {devTools.map((tool, i) => (
-                        <div key={i} className="flex items-center justify-between p-2 rounded hover:bg-white/5 transition-colors">
-                            <div className="flex items-center gap-3">
-                                {tool.icon}
-                                <span className="text-hl-text font-medium text-sm">{tool.name}</span>
-                            </div>
-                            <span className="text-xs text-hl-muted/60 font-mono hidden sm:block">{tool.desc}</span>
-                        </div>
-                    ))}
-                </div>
+                <button 
+                  onClick={() => setIsToolsOpen(!isToolsOpen)}
+                  className="w-full flex items-center justify-between p-6 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                >
+                    <div className="flex items-center gap-2">
+                      <Terminal className="w-4 h-4 text-hl-muted" />
+                      <h4 className="text-sm font-mono text-hl-muted uppercase tracking-wider">Tools & Stack</h4>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <a href="#skills" onClick={(e) => e.stopPropagation()} className="text-[10px] text-hl-cyan hover:underline cursor-pointer">
+                        View Full Stack {'->'}
+                      </a>
+                      <motion.div animate={{ rotate: isToolsOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                        <ChevronDown className="w-4 h-4 text-hl-muted" />
+                      </motion.div>
+                    </div>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isToolsOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="px-6 pb-6 space-y-3">
+                          {devTools.map((tool, i) => (
+                              <div key={i} className="flex items-center justify-between p-2 rounded hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                                  <div className="flex items-center gap-3">
+                                      {tool.icon}
+                                      <span className="text-hl-text font-medium text-sm">{tool.name}</span>
+                                  </div>
+                                  <span className="text-xs text-hl-muted/60 font-mono hidden sm:block">{tool.desc}</span>
+                              </div>
+                          ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
             </motion.div>
 
-            {/* Hardware */}
+            {/* Hardware Accordion */}
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="rounded-xl border border-hl-border bg-hl-card p-6"
+              className="rounded-xl border border-hl-border bg-hl-card overflow-hidden"
             >
-                <h4 className="text-sm font-mono text-hl-muted uppercase tracking-wider mb-4 flex items-center gap-2">
-                   <Cpu className="w-4 h-4" /> Hardware / Gear
-                </h4>
-                <div className="space-y-3">
-                    {gear.map((item, i) => (
-                        <div key={i} className="flex items-center justify-between p-2 rounded hover:bg-white/5 transition-colors">
-                             <div className="flex items-center gap-3 text-hl-muted">
-                                {item.icon}
-                                <span className="text-hl-text font-medium text-sm">{item.name}</span>
-                            </div>
-                            <span className="text-xs text-hl-muted/60 font-mono">{item.desc}</span>
-                        </div>
-                    ))}
-                </div>
+                <button 
+                  onClick={() => setIsGearOpen(!isGearOpen)}
+                  className="w-full flex items-center justify-between p-6 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Cpu className="w-4 h-4 text-hl-muted" />
+                    <h4 className="text-sm font-mono text-hl-muted uppercase tracking-wider">Hardware / Gear</h4>
+                  </div>
+                  <motion.div animate={{ rotate: isGearOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                    <ChevronDown className="w-4 h-4 text-hl-muted" />
+                  </motion.div>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isGearOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="px-6 pb-6 space-y-3">
+                          {gear.map((item, i) => (
+                              <div key={i} className="flex items-center justify-between p-2 rounded hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                                   <div className="flex items-center gap-3 text-hl-muted">
+                                      {item.icon}
+                                      <span className="text-hl-text font-medium text-sm">{item.name}</span>
+                                  </div>
+                                  <span className="text-xs text-hl-muted/60 font-mono">{item.desc}</span>
+                              </div>
+                          ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
             </motion.div>
 
         </div>
