@@ -32,6 +32,9 @@ html {
   --accent-moss: #000000;   /* Pure Black Accent */
   
   --border-dim: rgba(0, 0, 0, 0.08); /* Crisp subtle borders */
+
+  --selection-bg: rgba(2, 132, 199, 0.32);
+  --selection-text: #0f172a;
 }
 
 [data-theme="dark"] {
@@ -48,6 +51,9 @@ html {
   --accent-moss: #ffffff;   
   
   --border-dim: rgba(255, 255, 255, 0.08);
+
+  --selection-bg: rgba(165, 180, 252, 0.38);
+  --selection-text: #f8fafc;
 }
 
 @layer base {
@@ -63,6 +69,16 @@ html {
     transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
                 color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
                 border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  ::selection {
+    background: var(--selection-bg);
+    color: var(--selection-text);
+  }
+
+  ::-moz-selection {
+    background: var(--selection-bg);
+    color: var(--selection-text);
   }
 
   /* 🖱️ SCROLLBAR ADAPTS TO THEME */

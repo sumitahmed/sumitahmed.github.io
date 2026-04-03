@@ -233,6 +233,7 @@ const SocialApp = ({ app }: { app: typeof SOCIAL_APPS[0] }) => {
 // ==========================================
 export function Hero() {
   const [currentTheme, setCurrentTheme] = useState<'dark' | 'light'>('dark');
+  const [isProfileWindowMaximized, setIsProfileWindowMaximized] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -370,6 +371,7 @@ export function Hero() {
               <DraggableWindow
                 title="user_profile.sh"
                 className="w-full border-hl-cyan/30 bg-hl-panel/60 backdrop-blur-xl shadow-[0_0_40px_-10px_rgba(165,180,252,0.25)]"
+                onMaximizedChange={setIsProfileWindowMaximized}
               >
                 <div className="flex flex-col items-center gap-5 text-center p-5 md:p-6">
                   <div className="relative w-28 h-28 md:w-32 md:h-32 group z-10">
@@ -417,32 +419,34 @@ export function Hero() {
         </div>
       </div>
 
-      {/* 3. DOCK ROW (100% Width at the Absolute Bottom Footer) */}
-      <div className="w-full relative z-50 mt-16 pb-8 border-t border-hl-border/30 bg-gradient-to-t from-hl-bg to-transparent pt-4">
-        <div className="container px-4 md:px-6 flex justify-center lg:justify-start">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="w-full max-w-full" 
-          >
-            {/* 100% width ensures all apps fit horizontally. Padding prevents any bottom slicing */}
-            <div 
-              className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto w-full pt-4 pb-12 px-2"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      {/* 3. DOCK ROW (hidden while profile window is maximized) */}
+      {!isProfileWindowMaximized && (
+        <div className="w-full relative z-50 mt-16 pb-8 border-t border-hl-border/30 bg-gradient-to-t from-hl-bg to-transparent pt-4">
+          <div className="container px-4 md:px-6 flex justify-center lg:justify-start">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="w-full max-w-full" 
             >
-              <style>{`.overflow-x-auto::-webkit-scrollbar { display: none; }`}</style>
-              
-              {SOCIAL_APPS.map((app) => (
-                <SocialApp key={app.id} app={app} />
-              ))}
-              
-              {/* Invisible spacer prevents the final icon from hitting screen edges on small devices */}
-              <div className="w-4 shrink-0" />
-            </div>
-          </motion.div>
+              {/* 100% width ensures all apps fit horizontally. Padding prevents any bottom slicing */}
+              <div 
+                className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto w-full pt-4 pb-12 px-2"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                <style>{`.overflow-x-auto::-webkit-scrollbar { display: none; }`}</style>
+                
+                {SOCIAL_APPS.map((app) => (
+                  <SocialApp key={app.id} app={app} />
+                ))}
+                
+                {/* Invisible spacer prevents the final icon from hitting screen edges on small devices */}
+                <div className="w-4 shrink-0" />
+              </div>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      )}
 
     </section>
   );

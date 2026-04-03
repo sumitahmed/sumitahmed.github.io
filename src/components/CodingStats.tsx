@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { GitBranch, Code2, Target, ExternalLink, Terminal, Activity, ChevronRight, ChevronLeft } from "lucide-react";
+import { GitBranch, Code2, Target, ExternalLink, Terminal, Activity, ChevronRight, Trophy, Flame, Medal } from "lucide-react";
 
 interface ContributionDay {
   date: string;
@@ -13,38 +13,67 @@ interface GitHubData {
   weeks: ContributionDay[][];
 }
 
+interface LeetCodeStats {
+  total: number;
+  activeDays: number;
+  easy: number;
+  medium: number;
+  hard: number;
+  ranking: number;
+  contestRating: number;
+  contests: number;
+  streak: number;
+  badgesCount: number;
+  latestBadgeName: string;
+  latestBadgeIcon: string;
+}
+
 export function CodingStats() {
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [leetcodeLoading, setLeetcodeLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const USE_LEETCODE = false;
   const githubUsername = "sumitahmed";
   const codolioUsername = "SumitKun";
-  const leetcodeUsername = "sumitahmed";
+  const leetcodeUsername = "sumitkun";
 
-  // ✅ UPDATED: Stats from your latest Codolio screenshot
+  const [leetcodeData, setLeetcodeData] = useState<LeetCodeStats>({
+    total: 0,
+    activeDays: 0,
+    easy: 0,
+    medium: 0,
+    hard: 0,
+    ranking: 0,
+    contestRating: 0,
+    contests: 0,
+    streak: 0,
+    badgesCount: 0,
+    latestBadgeName: "No badge yet",
+    latestBadgeIcon: "",
+  });
+
+  // Hardcoded Codolio snapshot (as requested)
   const codolioData = {
-    total: 236,      // Was 173
-    activeDays: 90,  // Was 52
-    easy: 128,       // Was 85
-    medium: 33,      // Was 17
-    hard: 4,         // Was 2
+    total: 208,
+    activeDays: 129,
+    easy: 146,
+    medium: 52,
+    hard: 10,
     label: "Codolio", color: "text-hl-rose", barColor: "bg-hl-rose",
     link: `https://codolio.com/profile/${codolioUsername}`,
   };
 
-  const leetcodeData = {
-    total: 15, activeDays: 0, easy: 10, medium: 5, hard: 0,
-    label: "LeetCode", color: "text-yellow-500", barColor: "bg-yellow-500",
-    link: `https://leetcode.com/${leetcodeUsername}`,
+  const leetcodeMeta = {
+    label: "LeetCode",
+    color: "text-yellow-500",
+    barColor: "bg-yellow-500",
+    link: `https://leetcode.com/u/${leetcodeUsername}`,
   };
 
-  const stats = USE_LEETCODE ? leetcodeData : codolioData;
-  
-  // Calculate total strictly for the progress bar so it fills 100% evenly
-  const barTotal = stats.easy + stats.medium + stats.hard;
+  const leetcodeBarTotal = Math.max(1, leetcodeData.easy + leetcodeData.medium + leetcodeData.hard);
+  const codolioBarTotal = Math.max(1, codolioData.easy + codolioData.medium + codolioData.hard);
 
   const getContributionColor = (level: number) => {
     switch (level) {
@@ -118,6 +147,64 @@ export function CodingStats() {
     }
     fetchContributions();
   }, [githubUsername, selectedYear]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchLeetCodeStats = async () => {
+      try {
+        const [profileRes, contestRes, badgesRes, calendarRes] = await Promise.all([
+          fetch(`https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/profile`),
+          fetch(`https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/contest`),
+          fetch(`https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/badges`),
+          fetch(`https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/calendar`),
+        ]);
+
+        if (!profileRes.ok || !contestRes.ok || !badgesRes.ok || !calendarRes.ok) {
+          throw new Error("LeetCode API request failed");
+        }
+
+        const profile = await profileRes.json();
+        const contest = await contestRes.json();
+        const badges = await badgesRes.json();
+        const calendar = await calendarRes.json();
+
+        const badgeIconRaw = badges?.activeBadge?.icon || badges?.badges?.[0]?.icon || "";
+        const normalizedBadgeIcon = badgeIconRaw
+          ? (badgeIconRaw.startsWith("http") ? badgeIconRaw : `https://leetcode.com${badgeIconRaw}`)
+          : "";
+
+        if (!isMounted) return;
+
+        setLeetcodeData({
+          total: profile?.totalSolved ?? 0,
+          activeDays: calendar?.totalActiveDays ?? 0,
+          easy: profile?.easySolved ?? 0,
+          medium: profile?.mediumSolved ?? 0,
+          hard: profile?.hardSolved ?? 0,
+          ranking: profile?.ranking ?? 0,
+          contestRating: Math.round(contest?.contestRating ?? 0),
+          contests: contest?.contestAttend ?? 0,
+          streak: calendar?.streak ?? 0,
+          badgesCount: badges?.badgesCount ?? 0,
+          latestBadgeName: badges?.activeBadge?.displayName || badges?.badges?.[0]?.displayName || "No badge yet",
+          latestBadgeIcon: normalizedBadgeIcon,
+        });
+      } catch {
+        // Keep existing/fallback values if API temporarily fails
+      } finally {
+        if (isMounted) setLeetcodeLoading(false);
+      }
+    };
+
+    fetchLeetCodeStats();
+    const interval = setInterval(fetchLeetCodeStats, 1000 * 60 * 10);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [leetcodeUsername]);
 
   const renderMonthLabels = () => {
     if (!githubData?.weeks) return null;
@@ -258,24 +345,116 @@ export function CodingStats() {
         </div>
       </motion.div>
 
-      {/* Codolio Stats Card */}
-      <a href={stats.link} target="_blank" rel="noopener noreferrer" className="block group w-full">
+      {/* LeetCode Stats Card */}
+      <a href={leetcodeMeta.link} target="_blank" rel="noopener noreferrer" className="block group w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className={`w-full space-y-4 rounded-xl border border-hl-border bg-hl-panel p-6 transition-all hover:shadow-lg ${USE_LEETCODE ? "hover:border-yellow-500/50 hover:shadow-yellow-500/10" : "hover:border-hl-rose/50 hover:shadow-hl-rose/10"}`}
+          className="w-full space-y-4 rounded-xl border border-hl-border bg-hl-panel p-6 transition-all hover:shadow-lg hover:border-yellow-500/50 hover:shadow-yellow-500/10"
         >
           <div className="flex items-center justify-between border-b border-hl-border pb-3">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg bg-hl-card`}>
-                {USE_LEETCODE ? <Terminal className={`h-5 w-5 ${stats.color}`} /> : <Code2 className={`h-5 w-5 ${stats.color}`} />}
+              <div className="p-2 rounded-lg bg-hl-card">
+                <Terminal className={`h-5 w-5 ${leetcodeMeta.color}`} />
               </div>
-              <span className={`font-bold tracking-wide ${stats.color}`}>
-                {stats.label} Stats
+              <span className={`font-bold tracking-wide ${leetcodeMeta.color}`}>
+                {leetcodeMeta.label} Stats
               </span>
             </div>
-            <span className="text-xs text-hl-muted">@{USE_LEETCODE ? leetcodeUsername : codolioUsername}</span>
+            <span className="text-xs text-hl-muted">@{leetcodeUsername} {leetcodeLoading ? "(syncing...)" : ""}</span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-1">
+            <div className="bg-hl-card rounded-xl p-4 border border-hl-border">
+              <div className="flex items-center gap-2 mb-1">
+                <Target className="h-4 w-4 text-hl-cyan" />
+                <span className="text-[10px] uppercase tracking-wider text-hl-muted">Solved</span>
+              </div>
+              <p className="text-3xl font-bold text-hl-text">{leetcodeData.total}</p>
+            </div>
+            <div className="bg-hl-card rounded-xl p-4 border border-hl-border">
+              <div className="flex items-center gap-2 mb-1">
+                <Trophy className={`h-4 w-4 ${leetcodeMeta.color}`} />
+                <span className="text-[10px] uppercase tracking-wider text-hl-muted">Rating</span>
+              </div>
+              <p className="text-3xl font-bold text-hl-text">{leetcodeData.contestRating || "-"}</p>
+            </div>
+            <div className="bg-hl-card rounded-xl p-4 border border-hl-border">
+              <div className="flex items-center gap-2 mb-1">
+                <Flame className="h-4 w-4 text-orange-400" />
+                <span className="text-[10px] uppercase tracking-wider text-hl-muted">Streak</span>
+              </div>
+              <p className="text-3xl font-bold text-hl-text">{leetcodeData.streak}</p>
+            </div>
+            <div className="bg-hl-card rounded-xl p-4 border border-hl-border">
+              <div className="flex items-center gap-2 mb-1">
+                <Activity className="h-4 w-4 text-hl-cyan" />
+                <span className="text-[10px] uppercase tracking-wider text-hl-muted">Active Days</span>
+              </div>
+              <p className="text-3xl font-bold text-hl-text">{leetcodeData.activeDays}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-hl-card rounded-xl p-4 border border-hl-border">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Medal className={`h-4 w-4 ${leetcodeMeta.color}`} />
+                  <span className="text-[10px] uppercase tracking-wider text-hl-muted">Global Rank</span>
+                </div>
+                <span className="text-xs text-hl-muted">Contests: {leetcodeData.contests}</span>
+              </div>
+              <p className="text-2xl font-bold text-hl-text mt-2">
+                {leetcodeData.ranking ? `#${leetcodeData.ranking.toLocaleString()}` : "-"}
+              </p>
+            </div>
+            <div className="bg-hl-card rounded-xl p-4 border border-hl-border">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[10px] uppercase tracking-wider text-hl-muted">Badges: {leetcodeData.badgesCount}</span>
+                {leetcodeData.latestBadgeIcon ? (
+                  <img src={leetcodeData.latestBadgeIcon} alt={leetcodeData.latestBadgeName} className="w-10 h-10 object-contain" loading="lazy" />
+                ) : null}
+              </div>
+              <p className="text-sm font-semibold text-hl-text mt-2 truncate" title={leetcodeData.latestBadgeName}>
+                {leetcodeData.latestBadgeName}
+              </p>
+            </div>
+          </div>
+
+           <div className="space-y-3 pt-1">
+             <div className="flex h-3 w-full overflow-hidden rounded-full bg-hl-card border border-hl-border/20">
+                <div className="bg-hl-moss" style={{ width: `${(leetcodeData.easy/leetcodeBarTotal)*100}%` }} />
+                <div className="bg-hl-cyan" style={{ width: `${(leetcodeData.medium/leetcodeBarTotal)*100}%` }} />
+                <div className={leetcodeMeta.barColor} style={{ width: `${(leetcodeData.hard/leetcodeBarTotal)*100}%` }} />
+             </div>
+             <div className="flex justify-between text-xs font-medium opacity-90 px-1">
+               <span className="text-hl-moss">Easy: {leetcodeData.easy}</span>
+               <span className="text-hl-cyan">Med: {leetcodeData.medium}</span>
+               <span className={leetcodeMeta.color}>Hard: {leetcodeData.hard}</span>
+             </div>
+           </div>
+        </motion.div>
+      </a>
+
+      {/* Codolio Stats Card */}
+      <a href={codolioData.link} target="_blank" rel="noopener noreferrer" className="block group w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="w-full space-y-4 rounded-xl border border-hl-border bg-hl-panel p-6 transition-all hover:shadow-lg hover:border-hl-rose/50 hover:shadow-hl-rose/10"
+        >
+          <div className="flex items-center justify-between border-b border-hl-border pb-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-hl-card">
+                <Code2 className={`h-5 w-5 ${codolioData.color}`} />
+              </div>
+              <span className={`font-bold tracking-wide ${codolioData.color}`}>
+                {codolioData.label} Stats
+              </span>
+            </div>
+            <span className="text-xs text-hl-muted">@{codolioUsername}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-4 md:gap-6 py-2">
@@ -284,28 +463,27 @@ export function CodingStats() {
                 <Target className="h-4 w-4 text-hl-cyan" />
                 <span className="text-[10px] uppercase tracking-wider text-hl-muted">Solved</span>
               </div>
-              <p className="text-3xl font-bold text-hl-text">{stats.total}</p>
+              <p className="text-3xl font-bold text-hl-text">{codolioData.total}</p>
             </div>
             <div className="bg-hl-card rounded-xl p-4 border border-hl-border">
               <div className="flex items-center gap-2 mb-1">
-                <Activity className={`h-4 w-4 ${stats.color}`} />
+                <Activity className={`h-4 w-4 ${codolioData.color}`} />
                 <span className="text-[10px] uppercase tracking-wider text-hl-muted">Active Days</span>
               </div>
-              <p className="text-3xl font-bold text-hl-text">{stats.activeDays}</p>
+              <p className="text-3xl font-bold text-hl-text">{codolioData.activeDays}</p>
             </div>
           </div>
 
            <div className="space-y-3 pt-1">
              <div className="flex h-3 w-full overflow-hidden rounded-full bg-hl-card border border-hl-border/20">
-                {/* Mathematical fix to ensure bar completely fills to 100% */}
-                <div className="bg-hl-moss" style={{ width: `${(stats.easy/barTotal)*100}%` }} />
-                <div className="bg-hl-cyan" style={{ width: `${(stats.medium/barTotal)*100}%` }} />
-                <div className={stats.barColor} style={{ width: `${(stats.hard/barTotal)*100}%` }} />
+                <div className="bg-hl-moss" style={{ width: `${(codolioData.easy/codolioBarTotal)*100}%` }} />
+                <div className="bg-hl-cyan" style={{ width: `${(codolioData.medium/codolioBarTotal)*100}%` }} />
+                <div className={codolioData.barColor} style={{ width: `${(codolioData.hard/codolioBarTotal)*100}%` }} />
              </div>
              <div className="flex justify-between text-xs font-medium opacity-90 px-1">
-               <span className="text-hl-moss">Easy: {stats.easy}</span>
-               <span className="text-hl-cyan">Med: {stats.medium}</span>
-               <span className={stats.color}>Hard: {stats.hard}</span>
+               <span className="text-hl-moss">Easy: {codolioData.easy}</span>
+               <span className="text-hl-cyan">Med: {codolioData.medium}</span>
+               <span className={codolioData.color}>Hard: {codolioData.hard}</span>
              </div>
            </div>
         </motion.div>

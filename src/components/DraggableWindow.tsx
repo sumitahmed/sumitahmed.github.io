@@ -6,12 +6,14 @@ interface DraggableWindowProps {
   title: string;
   children: ReactNode;
   className?: string;
+  onMaximizedChange?: (isMaximized: boolean) => void;
 }
 
 export function DraggableWindow({
   title,
   children,
   className = "",
+  onMaximizedChange,
 }: DraggableWindowProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
@@ -40,6 +42,16 @@ export function DraggableWindow({
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  useEffect(() => {
+    onMaximizedChange?.(isMaximized);
+  }, [isMaximized, onMaximizedChange]);
+
+  useEffect(() => {
+    return () => {
+      onMaximizedChange?.(false);
+    };
+  }, [onMaximizedChange]);
 
   const handleMinimize = () => {
     setOffset({ x: 0, y: 0 });
@@ -179,7 +191,7 @@ export function DraggableWindow({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998] cursor-pointer"
+            className="fixed inset-0 bg-black/55 backdrop-blur-sm z-[9998] cursor-pointer"
             onClick={handleMaximize}
           />
         )}
@@ -201,7 +213,11 @@ export function DraggableWindow({
             y: hasBeenDragged && !isMaximized && !isMobile ? offset.y : 0,
           }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          className="flex flex-col bg-hl-panel/20 backdrop-blur-xl border border-hl-border rounded-lg shadow-2xl w-full"
+          className={`flex flex-col border border-hl-border rounded-lg shadow-2xl w-full ${
+            isMaximized
+              ? "bg-hl-panel backdrop-blur-none shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+              : "bg-hl-panel/20 backdrop-blur-xl"
+          }`}
           style={{
             width: isMaximized
               ? "min(700px, 90vw)"
@@ -214,6 +230,7 @@ export function DraggableWindow({
               ? `${size.height}px`
               : "auto",
             maxHeight: isMaximized ? "85vh" : "none",
+            ...(isMaximized ? ({ ["--text-muted" as any]: "var(--text-primary)" } as React.CSSProperties) : {}),
           }}
         >
           {/* Resize Handles */}
@@ -232,7 +249,9 @@ export function DraggableWindow({
 
           {/* Window Header */}
           <div
-            className="flex items-center justify-between px-3 py-2 bg-hl-card/50 backdrop-blur-md border-b border-hl-border select-none rounded-t-lg relative flex-shrink-0"
+            className={`flex items-center justify-between px-3 py-2 backdrop-blur-md border-b border-hl-border select-none rounded-t-lg relative flex-shrink-0 ${
+              isMaximized ? "bg-hl-card" : "bg-hl-card/50"
+            }`}
             onMouseDown={handleMouseDown}
             style={{
               cursor: isMaximized || isMobile ? "default" : "grab",
@@ -270,7 +289,7 @@ export function DraggableWindow({
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className={`bg-transparent rounded-b-lg ${isMaximized ? "flex-1 overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
+                className={`${isMaximized ? "bg-hl-panel" : "bg-transparent"} rounded-b-lg ${isMaximized ? "flex-1 overflow-y-auto overflow-x-hidden" : "overflow-auto"}`}
                 style={size.height > 0 && !isMaximized && !isMobile ? { maxHeight: `${size.height - 40}px` } : {}}
               >
                 {children}

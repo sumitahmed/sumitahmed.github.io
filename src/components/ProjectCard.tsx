@@ -22,20 +22,20 @@ export function ProjectCard({ project }: { project: Project }) {
           {/* 1. IMAGE SECTION */}
           <div 
             onClick={() => setIsModalOpen(true)}
-            className="aspect-video overflow-hidden border-b border-hl-border relative bg-hl-card cursor-pointer"
+            className="group/image aspect-video overflow-hidden border-b border-hl-border relative bg-hl-card cursor-pointer"
           >
             <img 
               src={project.image} 
               alt={project.title} 
-              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" 
+              className="w-full h-full object-cover transform transition-transform duration-700 opacity-90 group-hover/image:scale-105 group-hover/image:opacity-100" 
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
             
             {/* Scanline Overlay */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_4px,3px_100%] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-overlay" />
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_4px,3px_100%] opacity-0 group-hover/image:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-overlay" />
             
             {/* Overlay Button */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 bg-black/40 backdrop-blur-[2px]">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity z-20 bg-black/40 backdrop-blur-[2px] pointer-events-none">
               <div className="bg-black/80 border border-hl-cyan text-hl-cyan px-4 py-2 rounded-sm text-xs font-mono tracking-widest uppercase flex items-center gap-2 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
                 <BookOpen className="w-4 h-4" /> OPEN_FILE
               </div>

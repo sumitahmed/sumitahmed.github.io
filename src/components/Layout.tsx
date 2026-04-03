@@ -144,7 +144,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-hl-bg text-hl-text relative overflow-hidden selection:bg-hl-cyan/30 selection:text-white font-sans transition-colors duration-500">
+    <div className="min-h-screen bg-hl-bg text-hl-text relative overflow-hidden font-sans transition-colors duration-500">
       
       {/* ⚡ THE BLOOM OVERLAY */}
       <div 
