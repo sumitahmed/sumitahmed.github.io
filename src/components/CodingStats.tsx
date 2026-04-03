@@ -32,6 +32,7 @@ export function CodingStats() {
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [loading, setLoading] = useState(true);
   const [leetcodeLoading, setLeetcodeLoading] = useState(true);
+  const [leetcodeSyncStatus, setLeetcodeSyncStatus] = useState<"syncing" | "live" | "cached">("syncing");
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -40,18 +41,18 @@ export function CodingStats() {
   const leetcodeUsername = "sumitkun";
 
   const [leetcodeData, setLeetcodeData] = useState<LeetCodeStats>({
-    total: 0,
-    activeDays: 0,
-    easy: 0,
-    medium: 0,
-    hard: 0,
-    ranking: 0,
-    contestRating: 0,
-    contests: 0,
-    streak: 0,
-    badgesCount: 0,
-    latestBadgeName: "No badge yet",
-    latestBadgeIcon: "",
+    total: 112,
+    activeDays: 91,
+    easy: 71,
+    medium: 34,
+    hard: 7,
+    ranking: 1358531,
+    contestRating: 1455,
+    contests: 2,
+    streak: 60,
+    badgesCount: 2,
+    latestBadgeName: "50 Days Badge 2026",
+    latestBadgeIcon: "https://assets.leetcode.com/static_assets/others/50_1080_1080.png",
   });
 
   // Hardcoded Codolio snapshot (as requested)
@@ -150,9 +151,25 @@ export function CodingStats() {
 
   useEffect(() => {
     let isMounted = true;
+    const CACHE_KEY = `leetcode_live_stats_${leetcodeUsername}`;
 
-    const fetchLeetCodeStats = async () => {
+    const hydrateFromCache = () => {
       try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return;
+        const cached = JSON.parse(raw) as LeetCodeStats;
+        setLeetcodeData(cached);
+        setLeetcodeSyncStatus("cached");
+      } catch {
+        // ignore bad cache payloads
+      }
+    };
+
+    hydrateFromCache();
+
+    const fetchLeetCodeStats = async (retries = 1): Promise<void> => {
+      try {
+        setLeetcodeSyncStatus("syncing");
         const [profileRes, contestRes, badgesRes, calendarRes] = await Promise.all([
           fetch(`https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/profile`),
           fetch(`https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/contest`),
@@ -174,9 +191,7 @@ export function CodingStats() {
           ? (badgeIconRaw.startsWith("http") ? badgeIconRaw : `https://leetcode.com${badgeIconRaw}`)
           : "";
 
-        if (!isMounted) return;
-
-        setLeetcodeData({
+        const normalizedStats: LeetCodeStats = {
           total: profile?.totalSolved ?? 0,
           activeDays: calendar?.totalActiveDays ?? 0,
           easy: profile?.easySolved ?? 0,
@@ -189,9 +204,19 @@ export function CodingStats() {
           badgesCount: badges?.badgesCount ?? 0,
           latestBadgeName: badges?.activeBadge?.displayName || badges?.badges?.[0]?.displayName || "No badge yet",
           latestBadgeIcon: normalizedBadgeIcon,
-        });
+        };
+
+        if (!isMounted) return;
+
+        setLeetcodeData(normalizedStats);
+        setLeetcodeSyncStatus("live");
+        localStorage.setItem(CACHE_KEY, JSON.stringify(normalizedStats));
       } catch {
-        // Keep existing/fallback values if API temporarily fails
+        if (retries > 0) {
+          await fetchLeetCodeStats(retries - 1);
+          return;
+        }
+        if (isMounted) setLeetcodeSyncStatus("cached");
       } finally {
         if (isMounted) setLeetcodeLoading(false);
       }
@@ -362,7 +387,9 @@ export function CodingStats() {
                 {leetcodeMeta.label} Stats
               </span>
             </div>
-            <span className="text-xs text-hl-muted">@{leetcodeUsername} {leetcodeLoading ? "(syncing...)" : ""}</span>
+            <span className="text-xs text-hl-muted">
+              @{leetcodeUsername} {leetcodeSyncStatus === "syncing" ? "(syncing...)" : leetcodeSyncStatus === "cached" ? "(cached)" : "(live)"}
+            </span>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-1">
