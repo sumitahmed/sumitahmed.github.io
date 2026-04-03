@@ -31,7 +31,6 @@ interface LeetCodeStats {
 export function CodingStats() {
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [leetcodeLoading, setLeetcodeLoading] = useState(true);
   const [leetcodeSyncStatus, setLeetcodeSyncStatus] = useState<"syncing" | "live" | "cached">("syncing");
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -217,8 +216,6 @@ export function CodingStats() {
           return;
         }
         if (isMounted) setLeetcodeSyncStatus("cached");
-      } finally {
-        if (isMounted) setLeetcodeLoading(false);
       }
     };
 
