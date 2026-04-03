@@ -31,7 +31,6 @@ interface LeetCodeStats {
 export function CodingStats() {
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [leetcodeSyncStatus, setLeetcodeSyncStatus] = useState<"syncing" | "live" | "cached">("syncing");
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -158,7 +157,6 @@ export function CodingStats() {
         if (!raw) return;
         const cached = JSON.parse(raw) as LeetCodeStats;
         setLeetcodeData(cached);
-        setLeetcodeSyncStatus("cached");
       } catch {
         // ignore bad cache payloads
       }
@@ -168,7 +166,6 @@ export function CodingStats() {
 
     const fetchLeetCodeStats = async (retries = 1): Promise<void> => {
       try {
-        setLeetcodeSyncStatus("syncing");
         const [profileRes, contestRes, badgesRes, calendarRes] = await Promise.all([
           fetch(`https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/profile`),
           fetch(`https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/contest`),
@@ -208,14 +205,12 @@ export function CodingStats() {
         if (!isMounted) return;
 
         setLeetcodeData(normalizedStats);
-        setLeetcodeSyncStatus("live");
         localStorage.setItem(CACHE_KEY, JSON.stringify(normalizedStats));
       } catch {
         if (retries > 0) {
           await fetchLeetCodeStats(retries - 1);
           return;
         }
-        if (isMounted) setLeetcodeSyncStatus("cached");
       }
     };
 
@@ -384,9 +379,7 @@ export function CodingStats() {
                 {leetcodeMeta.label} Stats
               </span>
             </div>
-            <span className="text-xs text-hl-muted">
-              @{leetcodeUsername} {leetcodeSyncStatus === "syncing" ? "(syncing...)" : leetcodeSyncStatus === "cached" ? "(cached)" : "(live)"}
-            </span>
+            <span className="text-xs text-hl-muted">@{leetcodeUsername}</span>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-1">
