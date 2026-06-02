@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export function ContactForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const FORMSPREE_ID = "xjknezzo"; 
+  const FORMSPREE_ID = process.env.REACT_APP_FORMSPREE_ID || "xjknezzo";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -26,12 +26,13 @@ interface LeetCodeStats {
   badgesCount: number;
   latestBadgeName: string;
   latestBadgeIcon: string;
+  weeks?: ContributionDay[][];
 }
 
 export function CodingStats() {
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedYear, setSelectedYear] = useState<number>(2025);
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const githubUsername = "sumitahmed";
@@ -55,11 +56,11 @@ export function CodingStats() {
 
   // Hardcoded Codolio snapshot (as requested)
   const codolioData = {
-    total: 208,
-    activeDays: 129,
-    easy: 146,
-    medium: 52,
-    hard: 10,
+    total: 344,
+    activeDays: 185,
+    easy: 183,
+    medium: 78,
+    hard: 11,
     label: "Codolio", color: "text-hl-rose", barColor: "bg-hl-rose",
     link: `https://codolio.com/profile/${codolioUsername}`,
   };
@@ -83,6 +84,25 @@ export function CodingStats() {
       case 4: return '#39d353'; 
       default: return 'var(--bg-card)';
     }
+  };
+
+  const getLeetcodeColor = (level: number) => {
+    switch (level) {
+      case 0: return 'var(--bg-card)';
+      case 1: return '#735b1c'; 
+      case 2: return '#a17f25'; 
+      case 3: return '#d4a833'; 
+      case 4: return '#facc15'; 
+      default: return 'var(--bg-card)';
+    }
+  };
+
+  const getLeetcodeLevel = (count: number) => {
+      if (count === 0) return 0;
+      if (count <= 2) return 1;
+      if (count <= 4) return 2;
+      if (count <= 6) return 3;
+      return 4;
   };
 
   useEffect(() => {
@@ -111,7 +131,10 @@ export function CodingStats() {
         }
 
         for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
-            const dateStr = d.toISOString().split('T')[0];
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const dateStr = `${y}-${m}-${day}`;
             const contribution = contributionMap.get(dateStr) || { count: 0, level: 0 };
             
             currentWeek.push({
@@ -187,6 +210,58 @@ export function CodingStats() {
           ? (badgeIconRaw.startsWith("http") ? badgeIconRaw : `https://leetcode.com${badgeIconRaw}`)
           : "";
 
+        let submissionMap = new Map<string, number>();
+        try {
+            const parsedCalendar = JSON.parse(calendar?.submissionCalendar || "{}");
+            Object.entries(parsedCalendar).forEach(([timestamp, count]) => {
+                const date = new Date(parseInt(timestamp) * 1000);
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateStr = `${y}-${m}-${day}`;
+                submissionMap.set(dateStr, count as number);
+            });
+        } catch (e) {
+            console.error("Failed to parse LeetCode calendar");
+        }
+
+        const lcWeeks: ContributionDay[][] = [];
+        let lcCurrentWeek: ContributionDay[] = [];
+        
+        const lcStartDate = new Date(selectedYear, 0, 1);
+        const lcEndDate = new Date(selectedYear, 11, 31);
+
+        const lcStartDayOfWeek = lcStartDate.getDay(); 
+        for (let i = 0; i < lcStartDayOfWeek; i++) {
+            lcCurrentWeek.push({ date: "", count: 0, level: 0 });
+        }
+
+        for (let d = new Date(lcStartDate); d <= lcEndDate; d.setDate(d.getDate() + 1)) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const dateStr = `${y}-${m}-${day}`;
+            const count = submissionMap.get(dateStr) || 0;
+            
+            lcCurrentWeek.push({
+                date: dateStr,
+                count: count,
+                level: getLeetcodeLevel(count)
+            });
+
+            if (lcCurrentWeek.length === 7) {
+                lcWeeks.push(lcCurrentWeek);
+                lcCurrentWeek = [];
+            }
+        }
+
+        if (lcCurrentWeek.length > 0) {
+            while (lcCurrentWeek.length < 7) {
+                lcCurrentWeek.push({ date: "", count: 0, level: 0 });
+            }
+            lcWeeks.push(lcCurrentWeek);
+        }
+
         const normalizedStats: LeetCodeStats = {
           total: profile?.totalSolved ?? 0,
           activeDays: calendar?.totalActiveDays ?? 0,
@@ -200,6 +275,7 @@ export function CodingStats() {
           badgesCount: badges?.badgesCount ?? 0,
           latestBadgeName: badges?.activeBadge?.displayName || badges?.badges?.[0]?.displayName || "No badge yet",
           latestBadgeIcon: normalizedBadgeIcon,
+          weeks: lcWeeks,
         };
 
         if (!isMounted) return;
@@ -221,21 +297,29 @@ export function CodingStats() {
       isMounted = false;
       clearInterval(interval);
     };
-  }, [leetcodeUsername]);
+  }, [leetcodeUsername, selectedYear]);
 
-  const renderMonthLabels = () => {
-    if (!githubData?.weeks) return null;
+  const renderMonthLabels = (weeks: ContributionDay[][] | undefined) => {
+    if (!weeks) return null;
     const months: { name: string; index: number }[] = [];
     
-    githubData.weeks.forEach((week, weekIndex) => {
+    weeks.forEach((week, weekIndex) => {
         const firstValidDay = week.find(d => d.date !== "");
         if (!firstValidDay) return;
         
-        const date = new Date(firstValidDay.date);
-        const month = date.toLocaleString('default', { month: 'short' });
+        const dateParts = firstValidDay.date.split('-');
+        if (dateParts.length !== 3) return;
+        
+        const mIndex = parseInt(dateParts[1], 10) - 1;
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const month = monthNames[mIndex];
         
         if (!months.some(m => m.name === month)) {
-            months.push({ name: month, index: weekIndex });
+            // Prevent overlap if labels are too close
+            const lastMonth = months[months.length - 1];
+            if (!lastMonth || (weekIndex - lastMonth.index) > 2) {
+                months.push({ name: month, index: weekIndex });
+            }
         }
     });
 
@@ -309,7 +393,7 @@ export function CodingStats() {
             >
                 <div className="flex flex-col min-w-max pr-8"> 
                   <div className="pl-8 w-full">
-                    {renderMonthLabels()}
+                    {renderMonthLabels(githubData?.weeks)}
                   </div>
 
                   <div className="flex gap-2">
@@ -449,6 +533,55 @@ export function CodingStats() {
                <span className="text-hl-moss">Easy: {leetcodeData.easy}</span>
                <span className="text-hl-cyan">Med: {leetcodeData.medium}</span>
                <span className={leetcodeMeta.color}>Hard: {leetcodeData.hard}</span>
+             </div>
+           </div>
+
+           {/* LeetCode Heatmap */}
+           <div className="pt-4 mt-4 border-t border-hl-border/50">
+             <div className="relative group/heatmap">
+                <div 
+                    className="overflow-x-auto pb-4 scroll-smooth w-full"
+                    style={{ maskImage: 'linear-gradient(to right, black 90%, transparent 100%)' }}
+                >
+                    <div className="flex flex-col min-w-max pr-8"> 
+                      <div className="pl-8 w-full">
+                        {renderMonthLabels(leetcodeData?.weeks)}
+                      </div>
+
+                      <div className="flex gap-2">
+                        <div className="flex flex-col justify-between text-[9px] text-hl-muted pt-2 pb-1 h-[88px] sticky left-0 bg-hl-panel z-10 pr-2">
+                          <span>Mon</span>
+                          <span>Wed</span>
+                          <span>Fri</span>
+                        </div>
+                        
+                        <div className="flex gap-[3px]">
+                          {leetcodeData?.weeks?.map((week, weekIndex) => (
+                            <div key={weekIndex} className="flex flex-col gap-[3px]">
+                              {week.map((day, dayIndex) => (
+                                day.date === "" ? (
+                                    <div key={dayIndex} className="w-[10px] h-[10px]" />
+                                ) : (
+                                    <div
+                                      key={dayIndex}
+                                      className="w-[10px] h-[10px] rounded-[2px] transition-all hover:scale-125 hover:z-20 relative"
+                                      style={{
+                                        backgroundColor: getLeetcodeColor(day.level)
+                                      }}
+                                      title={`${day.count} submissions on ${day.date}`}
+                                    />
+                                )
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-yellow-500 opacity-0 group-hover/heatmap:opacity-50 transition-opacity md:hidden">
+                    <ChevronRight className="w-6 h-6 animate-pulse" />
+                </div>
              </div>
            </div>
         </motion.div>

@@ -26,7 +26,7 @@ export function LiveActivity() {
   const [icon, setIcon] = useState<'code' | 'music' | 'game' | 'idle'>('idle');
 
   // REPLACE THIS WITH YOUR DISCORD USER ID
-  const DISCORD_USER_ID = '608572578231091240';
+  const DISCORD_USER_ID = process.env.REACT_APP_DISCORD_USER_ID || '608572578231091240';
 
   useEffect(() => {
     const fetchActivity = async () => {

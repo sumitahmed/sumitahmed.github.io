@@ -14,10 +14,11 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
+  const [showAllProjects, setShowAllProjects] = useState(false);
 
   useEffect(() => {
     const updateCount = async () => {
-      const WORKER_URL = "https://visitor-counter.sksumitahmed007.workers.dev/";
+      const WORKER_URL = process.env.REACT_APP_VISITOR_COUNTER_URL || "https://visitor-counter.sksumitahmed007.workers.dev/";
       const CACHE_KEY = "portfolio_visitor_count";
       const SESSION_KEY = "portfolio_session_counted";
 
@@ -85,11 +86,21 @@ export default function Home() {
           <div className="h-px bg-hl-border flex-1 mb-4" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {PROJECTS_DATA.map((project, i) => (
+          {PROJECTS_DATA.slice(0, showAllProjects ? PROJECTS_DATA.length : 2).map((project, i) => (
             <motion.div key={project.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.2, duration: 0.5 }}>
               <ProjectCard project={project} />
             </motion.div>
           ))}
+        </div>
+        
+        <div className="mt-12 flex justify-center">
+          <button 
+            onClick={() => setShowAllProjects(!showAllProjects)}
+            className="px-6 py-3 bg-hl-panel border border-hl-border hover:border-hl-cyan/50 hover:text-hl-cyan text-hl-muted font-mono text-sm rounded-lg transition-all flex items-center gap-2 group shadow-lg"
+          >
+            <span className="text-hl-rose font-bold">$</span>
+            {showAllProjects ? "[EXECUTE: minimize_view.sh] <-" : "[EXECUTE: view_all_projects.sh] ->"}
+          </button>
         </div>
       </section>
 

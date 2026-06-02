@@ -15,19 +15,12 @@ export function Experience() {
 
       <div className="relative max-w-3xl mx-auto">
         
-        {/* 2. Sub-heading */}
-        <div className="relative z-10 mb-8 text-center md:text-left">
-            <span className="text-hl-muted font-mono text-sm tracking-wide">
-                {"// Before dev, I used to do this..."}
-            </span>
-        </div>
-
         {/* 🧵 THE STRING (Neon Line Behind) */}
         <div className="absolute left-1/2 top-10 bottom-0 w-[2px] -translate-x-1/2 bg-gradient-to-b from-transparent via-hl-cyan/30 to-transparent z-0" />
 
         <div className="space-y-16 relative z-10">
           
-          {/* WINDOW 1: MOBILE ERA */}
+          {/* WINDOW 1: RESEARCH INTERNSHIP ERA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -37,8 +30,164 @@ export function Experience() {
               y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
               opacity: { duration: 0.5 } 
             }}
+            className="flex flex-col items-center group"
+          >
+            {/* The Window Card */}
+            <div className="w-full max-w-xl relative rounded-lg border border-hl-border bg-hl-panel/90 backdrop-blur-xl shadow-2xl overflow-hidden">
+              
+              {/* Window Title Bar */}
+              <div className="h-9 bg-hl-card border-b border-hl-border flex items-center justify-between px-4 select-none">
+                <span className="text-[10px] font-mono text-hl-muted flex items-center gap-2">
+                  <Monitor className="w-3 h-3 text-hl-cyan" />
+                  ~/research/image-processing
+                </span>
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50" />
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 space-y-5">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-bold text-hl-text group-hover:text-hl-cyan transition-colors">
+                      Research Intern
+                    </h3>
+                    <p className="text-xs font-mono text-hl-cyan/80 mt-1 flex items-center gap-2">
+                      <Briefcase className="w-3 h-3" /> Jadavpur University | May 2026 – Current
+                    </p>
+                    <p className="text-[11px] font-mono text-hl-muted mt-2 uppercase tracking-wider">
+                      Domain: Image Processing
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Description */}
+                <div className="text-sm text-hl-muted border-l-2 border-hl-cyan/20 pl-3 space-y-3 font-mono">
+                    <div className="flex items-start">
+                      <span className="text-hl-cyan font-bold mr-2">{'>'}</span>
+                      <span>Engineered and optimized custom deep learning pipelines using PyTorch to process, augment, and extract high-dimensional features from large-scale image datasets.</span>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="text-hl-cyan font-bold mr-2">{'>'}</span>
+                      <span>Implemented OpenCV modules for advanced image preprocessing, geometric transformations, and real-time noise reduction filters to significantly improve model convergence latency.</span>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="text-hl-cyan font-bold mr-2">{'>'}</span>
+                      <span>Conducted rigorous validation, hyperparameter tuning, and computational efficiency checks on deep convolutional networks under academic research parameters.</span>
+                    </div>
+                </div>
+
+                {/* Stack */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-hl-muted uppercase">
+                    <Layers className="w-3 h-3" /> Tech Stack
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {["Machine Learning", "PyTorch", "OpenCV", "Digital Image Processing", "Python", "CUDA"].map(t => (
+                      <span key={t} className="px-2 py-1 rounded bg-hl-card border border-hl-border text-[10px] text-hl-text/80 font-mono group-hover:border-hl-cyan/30 transition-colors">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* WINDOW 2: FULLSTACK FREELANCE ERA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            animate={{ y: [0, -5, 0] }}
+            className="flex flex-col items-center group"
+          >
+             {/* Connector Dot */}
+            <div className="w-4 h-4 bg-hl-bg rounded-full border-[3px] border-hl-cyan mb-6 shadow-[0_0_15px_rgba(6,182,212,0.6)] z-20 relative" />
+
+            {/* The Window Card */}
+            <div className="w-full max-w-xl relative rounded-lg border border-hl-border bg-hl-panel/90 backdrop-blur-xl shadow-2xl overflow-hidden">
+              
+              {/* Window Title Bar */}
+              <div className="h-9 bg-hl-card border-b border-hl-border flex items-center justify-between px-4 select-none">
+                <span className="text-[10px] font-mono text-hl-muted flex items-center gap-2">
+                  <Monitor className="w-3 h-3 text-hl-cyan" />
+                  ~/freelance/fullstack
+                </span>
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50" />
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 space-y-5">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-bold text-hl-text group-hover:text-hl-cyan transition-colors">
+                      Freelance Fullstack Developer
+                    </h3>
+                    <p className="text-xs font-mono text-hl-cyan/80 mt-1 flex items-center gap-2">
+                      <Briefcase className="w-3 h-3" /> Self-Employed | 2024 – Current
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Description */}
+                <div className="text-sm text-hl-muted border-l-2 border-hl-cyan/20 pl-3 space-y-3 font-mono">
+                    <div className="flex items-start">
+                      <span className="text-hl-cyan font-bold mr-2">{'>'}</span>
+                      <span>Designed and engineered scalable full-stack web applications for independent clients, emphasizing performance and clean UI/UX.</span>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="text-hl-cyan font-bold mr-2">{'>'}</span>
+                      <span>Integrated complex backend architectures with modern frontend frameworks to deliver responsive, dynamic user experiences.</span>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="text-hl-cyan font-bold mr-2">{'>'}</span>
+                      <span>Managed end-to-end development lifecycles, from initial requirement gathering and wireframing to deployment and maintenance.</span>
+                    </div>
+                </div>
+
+                {/* Stack */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-hl-muted uppercase">
+                    <Layers className="w-3 h-3" /> Tech Stack
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {["React", "Next.js", "TypeScript", "Node.js", "Tailwind CSS", "PostgreSQL"].map(t => (
+                      <span key={t} className="px-2 py-1 rounded bg-hl-card border border-hl-border text-[10px] text-hl-text/80 font-mono group-hover:border-hl-cyan/30 transition-colors">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* WINDOW 3: MOBILE ERA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            animate={{ y: [0, -5, 0] }}
             className="flex flex-col items-center"
           >
+            <div className="mb-6 text-center">
+                <span className="text-hl-muted font-mono text-[13px] tracking-wide bg-hl-bg px-4 py-1 rounded-full border border-hl-border relative z-20 shadow-lg">
+                    {"// Before dev, I used to do this..."}
+                </span>
+            </div>
+             {/* Connector Dot */}
+            <div className="w-4 h-4 bg-hl-bg rounded-full border-[3px] border-hl-cyan mb-6 shadow-[0_0_15px_rgba(6,182,212,0.6)] z-20 relative" />
+
             {/* The Window Card */}
             <div className="w-full max-w-xl relative rounded-lg border border-hl-border bg-hl-panel/90 backdrop-blur-xl shadow-2xl overflow-hidden">
               
@@ -80,12 +229,12 @@ export function Experience() {
             </div>
           </motion.div>
 
-          {/* WINDOW 2: FREELANCE ERA */}
+          {/* WINDOW 4: FREELANCE ERA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.6 }}
             animate={{ y: [0, -5, 0] }}
             className="flex flex-col items-center"
           >

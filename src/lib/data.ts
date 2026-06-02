@@ -29,6 +29,42 @@ export interface Project {
 
 export const PROJECTS_DATA: Project[] = [
   {
+    id: 0,
+    title: "Panvas",
+    description: "A visual thinking workspace for engineers, researchers, and technical students. Think. Sketch. Write. Build.",
+    tags: ["React", "TypeScript", "Vite", "Excalidraw"],
+    image: "/panvas.png",
+    githubUrl: "https://github.com/sumitahmed/Panvas",
+    demoUrl: "https://panvas.vercel.app",
+    featured: true,
+    overview: "Panvas is an infinite visual workspace built for engineers, researchers, and creators. By integrating the Excalidraw engine within a modern React and TypeScript architecture, it provides a seamless whiteboard experience optimized for technical sketching, wireframing, and drafting ideas.",
+    motivation: "Technical brainstorming requires more than just text—it demands a fluid visual canvas. I built Panvas to create a dedicated space where complex ideas can be mapped out without friction.",
+    features: [
+      "Infinite Canvas: Freely draw, type, and connect diagrams on a boundless workspace.",
+      "Technical Sketching: Optimized tools for wireframing and architectural diagrams.",
+      "High Performance: Leveraging Vite and modern React for lightning-fast rendering."
+    ],
+    techStackDetails: [
+      { category: "Frontend", tools: "React, TypeScript" },
+      { category: "Build Tool", tools: "Vite" },
+      { category: "Canvas Engine", tools: "Excalidraw API" }
+    ],
+    challenges: [
+      {
+        title: "Canvas Engine Integration",
+        description: "Integrating and optimizing a heavy canvas engine while maintaining a smooth 60fps interaction frame rate."
+      }
+    ],
+    impact: [
+      "Created a robust tool for fast visual ideation.",
+      "Mastered complex canvas-based state handling."
+    ],
+    futurePlans: [
+      "Collaborative multiplayer sessions.",
+      "Cloud syncing for workspaces."
+    ]
+  },
+  {
     id: 1,
     title: "AgriSense AI",
     description: "AI-powered agricultural monitoring system integrating satellite imagery (Geospatial Data) for crop health analysis. Built for Smart India Hackathon 2025.",
@@ -236,6 +272,43 @@ export const PROJECTS_DATA: Project[] = [
       "File System: Implementing a virtual file system where users can create folders and text files.",
       "Theme Switcher: Allowing users to toggle between 'Cyberpunk', 'Nord', and 'Gruvbox' themes.",
       "Music Player: A working widget playing lofi beats."
+    ]
+  },
+  {
+    id: 5,
+    title: "TabBridge",
+    description: "Cross-browser tab group transfer extension for Chromium browsers like Chrome, Brave, and Edge.",
+    tags: ["JavaScript", "Browser Extension", "Manifest V3"],
+    image: "https://raw.githubusercontent.com/sumitahmed/TabBridge/main/screenshots/export.png",
+    githubUrl: "https://github.com/sumitahmed/TabBridge",
+    demoUrl: "",
+    featured: false,
+    overview: "TabBridge is a Manifest V3 browser extension that solves the problem of migrating organized tab groups across different Chromium browsers. It acts as a lightweight bridge, allowing users to export all their tab groups—including names, colors, and URLs—into a single JSON file, and seamlessly import them anywhere else.",
+    motivation: "Browsers like Chrome, Brave, and Edge don't natively support transferring tab groups. Moving 40+ organized tabs meant copying URLs one by one. I built TabBridge to automate this tedious process securely and locally.",
+    features: [
+      "Export/Import: Captures and recreates all tab groups with correct titles, colors, and URLs.",
+      "Cross-Browser: Works flawlessly across Chrome, Brave, Edge, and any Chromium derivative.",
+      "100% Local & Secure: No accounts, no cloud, no backend. Everything runs completely offline.",
+      "Lightweight: Built without heavy frameworks, keeping the total size under 30KB."
+    ],
+    techStackDetails: [
+      { category: "Extension Architecture", tools: "Manifest V3" },
+      { category: "Languages", tools: "Vanilla JavaScript, HTML, CSS" },
+      { category: "APIs Used", tools: "Chrome Tabs API, Chrome TabGroups API" }
+    ],
+    challenges: [
+      {
+        title: "Browser API Quirks",
+        description: "Different Chromium browsers handle TabGroup IDs and creation slightly differently. I had to ensure the parsing logic correctly restores the exact state without breaking the browser's native indexing."
+      }
+    ],
+    impact: [
+      "Streamlined workflow for users switching between browsers.",
+      "Delivered a zero-dependency, ultra-fast utility tool."
+    ],
+    futurePlans: [
+      "Auto-sync features via secure local network transfer.",
+      "Firefox compatibility (Manifest V2/V3 alignment)."
     ]
   }
 ];
