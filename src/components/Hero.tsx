@@ -250,12 +250,8 @@ export function Hero() {
   }, []);
 
   useEffect(() => {
-    if (videoRef.current && typeof videoRef.current.load === 'function') {
-      try {
-        videoRef.current.load();
-      } catch (e) {
-        // Safe fallback for environments where load() is not supported
-      }
+    if (videoRef.current) {
+      videoRef.current.load();
     }
   }, [currentTheme]);
 
@@ -278,8 +274,6 @@ export function Hero() {
           loop
           muted
           playsInline
-          preload="metadata"
-          poster={currentTheme === 'dark' ? "/cyber-dark-poster.webp" : "/cyber-light-poster.webp"}
           className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-500"
         >
           <source src={currentTheme === 'dark' ? "/cyber-dark.mp4" : "/cyber-light.mp4"} type="video/mp4" />
