@@ -52,10 +52,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
     }, 100);
   };
 
-  // 2. Ping
+  // 2. Ping (Visibility-aware, 5s interval)
   useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
     const measurePing = async () => {
-      if (!navigator.onLine) { setPing(null); return; }
+      if (document.hidden || !navigator.onLine) {
+        if (!navigator.onLine) setPing(null);
+        return;
+      }
       const start = performance.now();
       try {
         await fetch(window.location.href.split('?')[0] + '?t=' + new Date().getTime(), { 
@@ -66,13 +70,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
       } catch (e) { setPing(null); }
     };
     measurePing();
-    const timer = setInterval(measurePing, 2000); 
-    return () => clearInterval(timer);
+    timer = setInterval(measurePing, 5000); 
+
+    const handleVisibility = () => {
+      if (!document.hidden) {
+        measurePing();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      if (timer) clearInterval(timer);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
-  // 3. Discord
+  // 3. Discord (Visibility-aware, 10s interval)
   useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
     const fetchSumitStatus = async () => {
+      if (document.hidden) return;
       try {
         const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`);
         const json = await res.json();
@@ -82,8 +99,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
       } catch (error) { setSumitStatus('offline'); }
     };
     fetchSumitStatus();
-    const interval = setInterval(fetchSumitStatus, 5000);
-    return () => clearInterval(interval);
+    interval = setInterval(fetchSumitStatus, 10000);
+
+    const handleVisibility = () => {
+      if (!document.hidden) {
+        fetchSumitStatus();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      if (interval) clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   // 4. Clock & Uptime

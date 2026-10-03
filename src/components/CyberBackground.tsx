@@ -16,6 +16,10 @@ export function CyberBackground() {
     let height = window.innerHeight;
     let animationFrameId: number;
 
+    const prefersReducedMotion = typeof window !== 'undefined' && 
+      window.matchMedia && 
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // 1. THEME DETECTION
     const updateTheme = () => {
       const currentTheme = document.documentElement.getAttribute('data-theme') as 'dark' | 'light' || 'dark';
@@ -43,8 +47,9 @@ export function CyberBackground() {
 
     // 2. PARTICLE SYSTEM
     const blobs: any[] = [];
-    // ⚡ Increased count to 35 (since individual clouds are smaller, we need more to cover the screen)
-    const blobCount = 35; 
+    // ⚡ Scale blob count on mobile screens for equivalent visual density without GPU/battery strain
+    const isMobile = width < 768;
+    const blobCount = isMobile ? 18 : 35; 
 
     // 🎨 DYNAMIC COLOR PALETTE
     const getTargetColor = (isDark: boolean) => {
@@ -167,13 +172,26 @@ export function CyberBackground() {
       }
 
       ctx.filter = 'none';
-      animationFrameId = requestAnimationFrame(render);
+      if (!prefersReducedMotion) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animationFrameId);
+      } else if (!prefersReducedMotion) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     render();
 
     return () => {
       observer.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);

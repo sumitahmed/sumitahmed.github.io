@@ -27,6 +27,8 @@ export function ProjectCard({ project }: { project: Project }) {
             <img 
               src={project.image} 
               alt={project.title} 
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transform transition-transform duration-700 opacity-90 group-hover/image:scale-105 group-hover/image:opacity-100" 
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
