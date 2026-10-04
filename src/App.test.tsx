@@ -22,9 +22,27 @@ test('renders FreeCompute project card with correct title and links', () => {
   expect(freecompute).toBeDefined();
   expect(freecompute.id).toBe(2);
   expect(freecompute.githubUrl).toBe('https://github.com/sumitahmed/FreeCompute');
+  expect(freecompute.demoUrl).toBe('https://freecompute.vercel.app/');
   expect(freecompute.image).toBe('/freecompute.webp');
   
+  const originalOpen = window.open;
+  window.open = jest.fn();
+
   render(<ProjectCard project={freecompute} />);
   expect(screen.getByText('FreeCompute')).toBeInTheDocument();
   expect(screen.getByText('~/projects/2')).toBeInTheDocument();
+
+  const demoButton = screen.getByRole('button', { name: /demo/i });
+  const codeButton = screen.getByRole('button', { name: /code/i });
+
+  expect(demoButton).toBeInTheDocument();
+  expect(codeButton).toBeInTheDocument();
+
+  demoButton.click();
+  expect(window.open).toHaveBeenCalledWith('https://freecompute.vercel.app/', '_blank');
+
+  codeButton.click();
+  expect(window.open).toHaveBeenCalledWith('https://github.com/sumitahmed/FreeCompute', '_blank');
+
+  window.open = originalOpen;
 });
