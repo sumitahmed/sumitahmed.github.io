@@ -71,6 +71,7 @@ export const PROJECTS_DATA: Project[] = [
     tags: ["Python", "LLM", "Kaggle", "llama.cpp", "Cloudflare"],
     image: "/freecompute.webp",
     githubUrl: "https://github.com/sumitahmed/FreeCompute",
+    demoUrl: "https://freecompute.vercel.app/",
     featured: true,
     overview: "FreeCompute bridges free cloud GPU environments (such as Kaggle dual Tesla T4 instances with 30 GB total VRAM) to a local developer terminal. It enables running open-source large language models (Qwen, DeepSeek, Mistral) and image generation pipelines (ComfyUI) remotely while keeping code, file edits, bash commands, and git history strictly on the local machine. The remote GPU host acts purely as an untrusted inference box connected through a secure Cloudflare tunnel.",
     motivation: "Running modern 27B-32B parameter open-source models locally requires expensive discrete GPUs with massive VRAM. Meanwhile, cloud services like Kaggle provide 30 hours per week of free dual Tesla T4 GPUs that largely go underutilized. FreeCompute was built to harness this free cloud compute for pair programming without giving cloud servers access to private local files or repositories.",
